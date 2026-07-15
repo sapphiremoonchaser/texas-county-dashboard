@@ -1,0 +1,24 @@
+[project]
+name = "texas-county-dashboard"
+version = "0.1.0"
+description = "Interactive dashboard exploring Texas county demographics and economics."
+readme = "README.md"
+requires-python = ">=3.12"
+
+dependencies = [
+    "pandas>=2.2",
+    "numpy>=2.0",
+    "plotly>=6.0",
+    "dash>=3.0",
+    "requests>=2.32",
+    "census>=0.8",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest",
+    "ruff",
+    "black",
+    "jupyter",
+    "ipykernel",
+]

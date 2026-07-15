@@ -1,0 +1,82 @@
+# ==========================
+# Python
+# ==========================
+
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Compiled extensions
+*.so
+
+# Distribution / packaging
+build/
+dist/
+*.egg-info/
+.eggs/
+pip-wheel-metadata/
+
+# Virtual environments
+.venv/
+venv/
+env/
+ENV/
+
+# ==========================
+# IDEs
+# ==========================
+
+# PyCharm
+.idea/
+
+# VS Code
+.vscode/
+
+# ==========================
+# Jupyter Notebooks
+# ==========================
+
+.ipynb_checkpoints/
+
+# ==========================
+# Testing / Coverage
+# ==========================
+
+.pytest_cache/
+.coverage
+.coverage.*
+htmlcov/
+.mypy_cache/
+.ruff_cache/
+
+# ==========================
+# Logs
+# ==========================
+
+*.log
+
+# ==========================
+# Environment Variables
+# ==========================
+
+.env
+.env.*
+
+# ==========================
+# Project Data
+# ==========================
+
+# Ignore downloaded/processed datasets
+data/raw/*
+!data/raw/.gitkeep
+
+data/processed/*
+!data/processed/.gitkeep
+
+# ==========================
+# OS Files
+# ==========================
+
+.DS_Store
+Thumbs.db
+desktop.ini
