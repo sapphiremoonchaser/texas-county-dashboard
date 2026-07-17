@@ -1,11 +1,6 @@
-from os.path import exists
 from pathlib import Path
 import pandas as pd
 import requests
-from numpy.ma.core import masked
-from setuptools.command.egg_info import overwrite_arg
-
-from notebooks.data_exploration.census_api_exploration import response
 
 
 class CensusVariables:
