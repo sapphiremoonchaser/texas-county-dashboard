@@ -134,7 +134,24 @@ class CensusVariables:
         )
 
 
-    # ToDo: Function for listing all available concepts
+    def concepts(self):
+        """
+        List available concepts.
+
+        Returns:
+            DataFrame of unique Census concepts in the metadata
+        """
+
+        # Make sure the data is loaded
+        if self.df is None:
+            self.download()
+
+        return (
+            self.df["concept"]
+            .dropna()
+            .sort_values()
+            .unique()
+        )
 
 
 
