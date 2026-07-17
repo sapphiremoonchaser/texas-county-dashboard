@@ -1,6 +1,8 @@
+from os.path import exists
 from pathlib import Path
 import pandas as pd
 import requests
+from numpy.ma.core import masked
 from setuptools.command.egg_info import overwrite_arg
 
 from notebooks.data_exploration.census_api_exploration import response
@@ -43,12 +45,13 @@ class CensusVariables:
 
 
     def download(
-            self
+            self,
+            overwrite=False
     ):
         """Download variable metadata from the Census API"""
         # If the csv cache file exists and the user did not request an overwrite
         # Create the dataframe from the csv file
-        if self.cache_file.exists() and not overwrite_arg():
+        if self.cache_file.exists() and not overwrite:
             self.df = pd.read_csv(self.cache_file)
             return self.df
 
@@ -78,8 +81,33 @@ class CensusVariables:
         return df
 
 
-    # ToDo: Function for searching every text column for a keyword
+    def search(
+        self,
+        keyword
+    ):
+        """Search every text column for a keyword."""
+        # If there's no dataframe use download() function to get the census variable df
+        if self.df is None:
+            self.download()
 
+        # Lowercase all keywords
+        keyword = keyword.lower()
+
+        # Create a boolean mask that tells us which rows contain keywords in any column
+        mask = (
+            self.df.fillna("") # fill na with empty string
+            .astype(str) # Read all columns as strings
+            .apply( # get the columns that have the keywords
+                lambda col: col.str.lower().str.contains(keyword)
+            )
+            .any(axis=1) # Look across each row
+        )
+
+        return (
+            self.df.loc[mask] # Keep only the rows where the mask is True
+            .sort_values("variable")
+            .reset_index(drop=True)
+        )
 
     # ToDo: Function for returning all variables belonging to a table
 
