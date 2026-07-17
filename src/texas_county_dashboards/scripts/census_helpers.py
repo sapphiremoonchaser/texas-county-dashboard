@@ -1,0 +1,91 @@
+from pathlib import Path
+import pandas as pd
+import requests
+from setuptools.command.egg_info import overwrite_arg
+
+from notebooks.data_exploration.census_api_exploration import response
+
+
+class CensusVariables:
+    """Download and search Census variable metadata."""
+
+    def __init__(
+        self,
+        year: int = 2024, # Set the census year
+        dataset: str = "acs/acs5", # Set the census catalog
+        cache_dir: str = "data/metadata" # Where to store it
+    ):
+        # Save the variables that were passed in
+        self.year = year
+        self.dataset = dataset
+        self.cache_dir = Path(cache_dir)
+
+        # Create the folder
+        self.cache_dir.mkdir(
+            parents=True,
+            exist_ok=True # If the folder already exists don't throw an error
+        )
+
+        # Set the url
+        self.url = (
+            f"https://api.census.gov/data/{year}/{dataset}/variables.json"
+        )
+
+        # Take out / from filename and replace with _
+        # Create the csv file
+        self.cache_file = (
+            self.cache_dir /
+            f"{dataset.replaca('/', '_')}_{year}_variables.csv"
+        )
+
+        # Create the dataframe
+        self.df =None
+
+
+    def download(
+            self
+    ):
+        """Download variable metadata from the Census API"""
+        # If the csv cache file exists and the user did not request an overwrite
+        # Create the dataframe from the csv file
+        if self.cache_file.exists() and not overwrite_arg():
+            self.df = pd.read_csv(self.cache_file)
+            return self.df
+
+        # Go to this url and download it
+        response = requests.get(
+            self.url,
+            timeout=30
+        )
+
+        # Check for errors
+        response.raise_for_status()
+
+        # Convert into JSON
+        variables = response.json()["variables"]
+
+        # Save the json text as a dataframe
+        df = (
+            pd.DataFrame
+            .from_dict(variables, orient="index")
+            .reset_index(names="variable")
+        )
+
+        # Gives you a second way to access the variable
+        # (along with the returned variable)
+        self.df = df
+
+        return df
+
+
+    # ToDo: Function for searching every text column for a keyword
+
+
+    # ToDo: Function for returning all variables belonging to a table
+
+
+    # ToDo: Function for listing all available concepts
+
+
+
+
