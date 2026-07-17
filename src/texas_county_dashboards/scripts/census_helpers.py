@@ -109,7 +109,29 @@ class CensusVariables:
             .reset_index(drop=True)
         )
 
-    # ToDo: Function for returning all variables belonging to a table
+
+    def table(
+        self,
+        table_code: str
+    ):
+        """Return all variables belonging to a table.
+
+        Parameters:
+            table_code (string): the table the user wants to retrive variables for.
+        """
+        # Make sure data is loaded
+        if self.df is None:
+            self.download()
+
+        table_code = table_code.upper()
+
+        return(
+            self.df[ # Filter by variable column
+                self.df["variable"].str.startswith(table_code)
+            ]
+            .sort_values("variable")
+            .reset_index(drop=True)
+        )
 
 
     # ToDo: Function for listing all available concepts
