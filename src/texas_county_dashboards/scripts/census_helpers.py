@@ -142,7 +142,7 @@ class CensusVariables:
             self.download()
 
         return (
-            self.df["concept"]
+            self.df["concept"] # Select the 'concept' column
             .dropna()
             .sort_values()
             .unique()
