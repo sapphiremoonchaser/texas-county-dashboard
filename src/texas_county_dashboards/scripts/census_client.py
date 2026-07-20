@@ -36,15 +36,16 @@ class CensusClient:
 
     def _get(
         self,
-        variables,
-        geography
-    ):
+        variables: list[str],
+        geography: dict[str, str]
+    ) -> pd.DataFrame:
         """
         Download Census data.
 
         Parameters
             variables (list[str]): Variables to request.
             geography (dict): Geography parameters.
+        :return: Pandas DataFrame with requested columns from census api
         """
 
         params = {
@@ -75,9 +76,9 @@ class CensusClient:
 
     def _clean_dataframe(
         self,
-        df,
-        variables
-    ):
+        df: pd.DataFrame,
+        variables: list[str]
+    ) -> pd.DataFrame:
         """
         Helper function for cleaning dataframes after retrieving census api data.
 
@@ -107,7 +108,7 @@ class CensusClient:
         return df
 
 
-    def county_profile(self):
+    def county_profile(self) -> pd.DataFrame:
         """
         Download Census data and return a dataframe.
         Columns:
@@ -151,7 +152,7 @@ class CensusClient:
         return df
 
 
-    def education_profile(self):
+    def education_profile(self) -> pd.DataFrame:
         """
         Download education Census data and return a dataframe.
         Columns:
@@ -193,7 +194,7 @@ class CensusClient:
         return df
 
 
-    def employment_profile(self):
+    def employment_profile(self) -> pd.DataFrame:
         """
         Download employment Census data and return a dataframe.
         Columns:
