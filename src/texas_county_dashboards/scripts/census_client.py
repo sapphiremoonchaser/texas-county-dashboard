@@ -3,11 +3,12 @@ Downloads data from the Census API
 """
 import requests
 import pandas as pd
-from dash import clientside_callback
-from dateutil.tz.win import valuestodict
-from numpy.ma.extras import column_stack
 
-from texas_county_dashboards.constants.census import ACS_COUNTY_PROFILE
+from texas_county_dashboards.constants.census import (
+    ACS_COUNTY_PROFILE,
+    ACS_EDUCATION,
+    ACS_EMPLOYMENT
+)
 
 
 class CensusClient:
@@ -87,9 +88,50 @@ class CensusClient:
         )
 
 
+    def _clean_dataframe(
+        self,
+        df,
+        variables
+    ):
+        """
+        Helper function for cleaning dataframes after retrieving census api data.
+
+        :param df: dataframe to be cleaned
+        :param variables: columns of dataframe
+        :return: cleaned dataframe
+        """
+        # Rename the columns to something more readable
+        rename_map = {
+            value: key
+            for key, value in variables.items()
+        }
+
+        df = df.rename(columns=rename_map)
+
+        # Everything from census api is returned as a string
+        # Convert numerical coumns to numerical datatypes
+        numeric_columns = list(
+            variables.keys()
+        )
+
+        df[numeric_columns] = (
+            df[numeric_columns]
+            .apply(pd.to_numeric)
+        )
+
+        return df
+
+
     def county_profile(self):
         """
         Download Census data and return a dataframe.
+        Columns:
+            state
+            county
+            NAME
+            population
+            median_income
+            median_age
 
         Returns
             df: Pandas DataFrame with requested columns from census api
@@ -108,13 +150,11 @@ class CensusClient:
             },
         )
 
-        # Rename the columns
-        rename_map = {
-            value: key
-            for key, value in ACS_COUNTY_PROFILE.items()
-        }
-
-        df = df.rename(columns=rename_map)
+        # Clean data by renaming columns and chaning number to numerical datatype
+        df = self._clean_dataframe(
+            df,
+            ACS_COUNTY_PROFILE
+        )
 
         # Reorder the columns
         columns = [
@@ -128,3 +168,90 @@ class CensusClient:
 
         return df
 
+
+    def education_profile(self):
+        """
+        Download education Census data and return a dataframe.
+        Columns:
+            county
+            population_24_plus
+            bachelors_plus
+            bachelors_plus_pct
+
+        Returns
+            df: Pandas DataFrame with requested columns from census api
+        """
+        # Build list of variables to request
+        variables = [
+            "NAME",
+            *ACS_EDUCATION.values(),
+        ]
+
+        df = self._get(
+            variables=variables,
+            geography={
+                "for": "county:*",  # All counties
+                "in": "state:48"  # In Texas
+            },
+        )
+
+        # Clean data by renaming columns and chaning number to numerical datatype
+        df = self._clean_dataframe(
+            df,
+            ACS_EDUCATION
+        )
+
+        # Reorder the columns
+        columns = [
+            "state",
+            "county",
+            "NAME",
+            *ACS_EDUCATION.keys()
+        ]
+
+        df = df[columns]
+
+        return df
+
+
+    def employment_profile(self):
+        """
+        Download employment Census data and return a dataframe.
+        Columns:
+            labor force
+            unemployed
+
+        Returns
+            df: Pandas DataFrame with requested columns from census api
+        """
+        # Build list of variables to request
+        variables = [
+            "NAME",
+            *ACS_EMPLOYMENT.values()
+        ]
+
+        df = self._get(
+            variables=variables,
+            geography={
+                "for": "county:*",  # All counties
+                "in": "state:48"  # In Texas
+            },
+        )
+
+        # Clean data by renaming columns and chaning number to numerical datatype
+        df = self._clean_dataframe(
+            df,
+            ACS_EMPLOYMENT
+        )
+
+        # Reorder the columns
+        columns = [
+            "state",
+            "county",
+            "NAME",
+            *ACS_EMPLOYMENT.keys()
+        ]
+
+        df = df[columns]
+
+        return df

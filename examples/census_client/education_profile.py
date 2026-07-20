@@ -11,11 +11,11 @@ census_client = CensusClient(
     api_key=api_key
 )
 
-county_profile = census_client.county_profile()
+education_profile = census_client.education_profile()
 
-county_profile.to_csv(
+education_profile.to_csv(
     "C:/Users/viole/dev/projects/portfolio/texas-county-dashboard\src"
-    "/texas_county_dashboards\data\processed/texas_county_profile.csv",
+    "/texas_county_dashboards\data\processed/texas_education_profile.csv",
     index=False
 )
 
