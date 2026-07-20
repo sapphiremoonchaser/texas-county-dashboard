@@ -7,7 +7,8 @@ import pandas as pd
 from texas_county_dashboards.constants.census import (
     ACS_COUNTY_PROFILE,
     ACS_EDUCATION,
-    ACS_EMPLOYMENT
+    ACS_EMPLOYMENT,
+    TEXAS_COUNTIES
 )
 
 
@@ -144,10 +145,7 @@ class CensusClient:
 
         df = self._get(
             variables=variables,
-            geography={
-                "for": "county:*", # All counties
-                "in": "state:48" # In Texas
-            },
+            geography=TEXAS_COUNTIES
         )
 
         # Clean data by renaming columns and chaning number to numerical datatype
@@ -189,10 +187,7 @@ class CensusClient:
 
         df = self._get(
             variables=variables,
-            geography={
-                "for": "county:*",  # All counties
-                "in": "state:48"  # In Texas
-            },
+            geography=TEXAS_COUNTIES
         )
 
         # Clean data by renaming columns and chaning number to numerical datatype
@@ -232,10 +227,7 @@ class CensusClient:
 
         df = self._get(
             variables=variables,
-            geography={
-                "for": "county:*",  # All counties
-                "in": "state:48"  # In Texas
-            },
+            geography=TEXAS_COUNTIES
         )
 
         # Clean data by renaming columns and chaning number to numerical datatype

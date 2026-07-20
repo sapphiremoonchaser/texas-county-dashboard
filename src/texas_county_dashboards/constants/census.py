@@ -17,3 +17,8 @@ ACS_EMPLOYMENT = {
     "labor_force": "B23025_003E",
     "unemployed": "B23025_005E",
 }
+
+TEXAS_COUNTIES = {
+    "for": "county",
+    "in": "state:48"
+}
