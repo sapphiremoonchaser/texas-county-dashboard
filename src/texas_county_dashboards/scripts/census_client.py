@@ -55,27 +55,11 @@ class CensusClient:
         if self.api_key:
             params["key"] = self.api_key
 
-        print(self.url)
-        print(params)
-
         response = requests.get(
             self.url,
             params=params,
             timeout=30
         )
-
-        print("Requested URL:")
-        print(response.request.url)
-
-        print("\nFinal URL:")
-        print(response.url)
-
-        print("\nRedirect History:")
-        for r in response.history:
-            print(r.status_code, r.url)
-
-        print("\nResponse:")
-        print(response.text[:500])
 
         # Raise an exception if 404, 500, or 403 error returned
         response.raise_for_status()
