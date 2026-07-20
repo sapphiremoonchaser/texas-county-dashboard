@@ -2,8 +2,6 @@ from pathlib import Path
 import pandas as pd
 import requests
 
-from texas_county_dashboards.constants import ACS_COUNTY_PROFILE
-
 
 class CensusVariables:
     """Download and search Census variable metadata."""
