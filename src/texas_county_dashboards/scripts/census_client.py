@@ -3,6 +3,7 @@ Downloads data from the Census API
 """
 import requests
 import pandas as pd
+from dash import clientside_callback
 from dateutil.tz.win import valuestodict
 from numpy.ma.extras import column_stack
 
@@ -18,10 +19,12 @@ class CensusClient:
         self,
         year: int = 2024,  # Set the census year
         dataset: str = "acs/acs5",  # Set the census catalog
+        api_key: str | None = None,
     ):
         # Save the variables that were passed in
         self.year = year
         self.dataset = dataset
+        self.api_key = api_key
 
         # Create the url
         self.url = (
@@ -47,11 +50,30 @@ class CensusClient:
             **geography
         }
 
+        if self.api_key:
+            params["key"] = self.api_key
+
+        print(self.url)
+        print(params)
+
         response = requests.get(
             self.url,
             params=params,
             timeout=30
         )
+
+        print("Requested URL:")
+        print(response.request.url)
+
+        print("\nFinal URL:")
+        print(response.url)
+
+        print("\nRedirect History:")
+        for r in response.history:
+            print(r.status_code, r.url)
+
+        print("\nResponse:")
+        print(response.text[:500])
 
         # Raise an exception if 404, 500, or 403 error returned
         response.raise_for_status()
