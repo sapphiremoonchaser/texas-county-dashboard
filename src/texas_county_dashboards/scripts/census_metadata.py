@@ -2,6 +2,8 @@ from pathlib import Path
 import pandas as pd
 import requests
 
+from texas_county_dashboards.constants import ACS_COUNTY_PROFILE
+
 
 class CensusVariables:
     """Download and search Census variable metadata."""
@@ -32,7 +34,7 @@ class CensusVariables:
         # Create the csv file
         self.cache_file = (
             self.cache_dir /
-            f"{dataset.replaca('/', '_')}_{year}_variables.csv"
+            f"{dataset.replace('/', '_')}_{year}_variables.csv"
         )
 
         # Create the dataframe
