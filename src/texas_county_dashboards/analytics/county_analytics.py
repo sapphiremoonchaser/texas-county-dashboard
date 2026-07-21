@@ -85,7 +85,38 @@ class CountyAnalytics:
         return self.df
 
 
-    # ToDo: calculate_metrics()
+    def calculate_metrics(self) -> pd.DataFrame:
+        """
+        Create derived county metrics.
+        :return: df including original and derived metrics
+        """
+
+        # Make sure the data is loaded
+        if self.df is None:
+            self.load_data()
+
+        # Calculate percent of people with a bachelor's degree or higher
+        self.df["bachelors_plus_pct"] = (
+            (
+                self.df["bachelors"]
+                + self.df["masters"]
+                + self.df["professional"]
+                + self.df["doctorate"]
+            )
+            /
+            self.df["population_25_plus"]
+            * 100
+        )
+
+        # Calculate unemployment rate
+        self.df["unemployment_rate"] = (
+            self.df["unemployed"]
+            /
+            self.df["labor_force"]
+            * 100
+        )
+
+        return self.df
 
     # ToDo: highest_income_counties()
 
