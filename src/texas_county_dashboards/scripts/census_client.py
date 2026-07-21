@@ -3,7 +3,6 @@ Downloads data from the Census API
 """
 import requests
 import pandas as pd
-from notebooks.data_exploration.census_api_exploration.census_api_exploration import df
 
 from texas_county_dashboards.constants.census import TEXAS_COUNTIES
 
