@@ -90,3 +90,5 @@ desktop.ini
 # ==========================
 *.csv
 *.parquet
+*.zip
+*.geojson
