@@ -10,6 +10,7 @@ from texas_county_dashboards.variables.county_profile import COUNTY_PROFILE
 from texas_county_dashboards.variables.education_profile import EDUCATION_PROFILE
 from texas_county_dashboards.variables.employment_profile import EMPLOYMENT_PROFILE
 from texas_county_dashboards.variables.demographics_profile import DEMOGRAPHICS_PROFILE
+from texas_county_dashboards.variables.economics_profile import ECONOMICS_PROFILE
 
 
 class CensusClient:
@@ -265,6 +266,42 @@ class CensusClient:
             "county",
             "NAME",
             *DEMOGRAPHICS_PROFILE.keys()
+        ]
+
+        df = df[columns]
+
+        return df
+
+
+    def economics_profile(self) -> pd.DataFrame:
+        """
+        Download economic health data from census api.
+
+        :return: dataframe with economic data
+        """
+        # Build list of variables to request
+        variables = [
+            "NAME",
+            *ECONOMICS_PROFILE.values()
+        ]
+
+        df = self._get(
+            variables=variables,
+            geography=TEXAS_COUNTIES
+        )
+
+        # Clean data by renaming columns and changing numberes to numerical datatypes
+        df = self._clean_dataframe(
+            df,
+            ECONOMICS_PROFILE
+        )
+
+        # Reorder the columns
+        columns = [
+            "state",
+            "county",
+            "NAME",
+            *ECONOMICS_PROFILE.keys()
         ]
 
         df = df[columns]
