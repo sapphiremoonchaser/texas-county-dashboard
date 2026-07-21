@@ -5,7 +5,7 @@ Combines and Calculates
 import pandas as pd
 
 from texas_county_dashboards.scripts.census_client import CensusClient
-
+from typing_inspection.typing_objects import is_self
 
 MERGE_KEYS = [
     "state",
@@ -88,6 +88,11 @@ class CountyAnalytics:
     def calculate_metrics(self) -> pd.DataFrame:
         """
         Create derived county metrics.
+            - bachelors_plus_pct
+            - unemployment_rate
+            - poverty_rate
+            - homeownership_rate
+            - vacancy_rate
         :return: df including original and derived metrics
         """
 
@@ -116,6 +121,30 @@ class CountyAnalytics:
             * 100
         )
 
+        # Calculate poverty rate
+        self.df["poverty_rate"] = (
+            self.df["population_below_poverty"]
+            /
+            self.df["poverty_universe"]
+            * 100
+        )
+
+        # Calculate homeownership rate
+        self.df["homeownership_rate"] = (
+            self.df["owner_occupied_units"]
+            /
+            self.df["occupied_housing_units"]
+            * 100
+        )
+
+        # Calculate vacancy rate
+        self.df["vacancy_rate"] = (
+            self.df["vacanct_housing_units"]
+            /
+            self.df["housing_units"]
+            * 100
+        )
+
         return self.df
 
 
@@ -132,7 +161,7 @@ class CountyAnalytics:
         return (
             self.df
             .sort_values(
-                "median_income",
+                "median_household_income",
                 ascending=False
             )
             .head(n)
@@ -157,3 +186,5 @@ class CountyAnalytics:
             )
             .head(n)
         )
+
+
