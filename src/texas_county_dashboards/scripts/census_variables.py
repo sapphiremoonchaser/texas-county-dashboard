@@ -1,4 +1,0 @@
-"""
-Variable catalog helper.
-"""
-
