@@ -3,13 +3,14 @@ Downloads data from the Census API
 """
 import requests
 import pandas as pd
+from notebooks.data_exploration.census_api_exploration.census_api_exploration import df
 
-from texas_county_dashboards.constants.census import (
-    ACS_COUNTY_PROFILE,
-    ACS_EDUCATION,
-    ACS_EMPLOYMENT,
-    TEXAS_COUNTIES
-)
+from texas_county_dashboards.constants.census import TEXAS_COUNTIES
+
+from texas_county_dashboards.variables.county_profile import COUNTY_PROFILE
+from texas_county_dashboards.variables.education_profile import EDUCATION_PROFILE
+from texas_county_dashboards.variables.employment_profile import EMPLOYMENT_PROFILE
+from texas_county_dashboards.variables.demographics_profile import DEMOGRAPHICS_PROFILE
 
 
 class CensusClient:
@@ -77,7 +78,7 @@ class CensusClient:
     def _clean_dataframe(
         self,
         df: pd.DataFrame,
-        variables: list[str]
+        variables: dict[str, str]
     ) -> pd.DataFrame:
         """
         Helper function for cleaning dataframes after retrieving census api data.
@@ -125,7 +126,7 @@ class CensusClient:
         # Build list of variables to request
         variables = [
             "NAME",
-            *ACS_COUNTY_PROFILE.values(),
+            *COUNTY_PROFILE.values()
         ]
 
         df = self._get(
@@ -136,7 +137,7 @@ class CensusClient:
         # Clean data by renaming columns and chaning number to numerical datatype
         df = self._clean_dataframe(
             df,
-            ACS_COUNTY_PROFILE
+            COUNTY_PROFILE
         )
 
         # Reorder the columns
@@ -144,8 +145,10 @@ class CensusClient:
             "state",
             "county",
             "NAME",
-            *ACS_COUNTY_PROFILE.keys()
+            *COUNTY_PROFILE.keys()
         ]
+
+        print(df.columns.to_list())
 
         df = df[columns]
 
@@ -167,7 +170,7 @@ class CensusClient:
         # Build list of variables to request
         variables = [
             "NAME",
-            *ACS_EDUCATION.values(),
+            *EDUCATION_PROFILE.values(),
         ]
 
         df = self._get(
@@ -178,7 +181,7 @@ class CensusClient:
         # Clean data by renaming columns and chaning number to numerical datatype
         df = self._clean_dataframe(
             df,
-            ACS_EDUCATION
+            EDUCATION_PROFILE
         )
 
         # Reorder the columns
@@ -186,7 +189,7 @@ class CensusClient:
             "state",
             "county",
             "NAME",
-            *ACS_EDUCATION.keys()
+            *EDUCATION_PROFILE.keys()
         ]
 
         df = df[columns]
@@ -207,7 +210,7 @@ class CensusClient:
         # Build list of variables to request
         variables = [
             "NAME",
-            *ACS_EMPLOYMENT.values()
+            *EMPLOYMENT_PROFILE.values()
         ]
 
         df = self._get(
@@ -218,7 +221,7 @@ class CensusClient:
         # Clean data by renaming columns and chaning number to numerical datatype
         df = self._clean_dataframe(
             df,
-            ACS_EMPLOYMENT
+            EMPLOYMENT_PROFILE
         )
 
         # Reorder the columns
@@ -226,7 +229,43 @@ class CensusClient:
             "state",
             "county",
             "NAME",
-            *ACS_EMPLOYMENT.keys()
+            *EMPLOYMENT_PROFILE.keys()
+        ]
+
+        df = df[columns]
+
+        return df
+
+
+    def demographics_profile(self) -> pd.DataFrame:
+        """
+        Download demographics data from census api.
+
+        :return: dataframe with demographics data
+        """
+        # Build list of variables to request
+        variables = [
+            "NAME",
+            *DEMOGRAPHICS_PROFILE.values()
+        ]
+
+        df = self._get(
+            variables=variables,
+            geography=TEXAS_COUNTIES
+        )
+
+        # Clean data by renaming columns and changing numberes to numerical datatypes
+        df = self._clean_dataframe(
+            df,
+            DEMOGRAPHICS_PROFILE
+        )
+
+        # Reorder the columns
+        columns = [
+            "state",
+            "county",
+            "NAME",
+            *DEMOGRAPHICS_PROFILE.keys()
         ]
 
         df = df[columns]

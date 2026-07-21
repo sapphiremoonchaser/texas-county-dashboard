@@ -14,8 +14,8 @@ census_client = CensusClient(
 county_profile = census_client.county_profile()
 
 county_profile.to_csv(
-    "C:/Users/viole/dev/projects/portfolio/texas-county-dashboard\src"
-    "/texas_county_dashboards\data\processed/texas_county_profile.csv",
+    "C:/Users/viole/dev/projects/portfolio/texas-county-dashboard/src"
+    "/texas_county_dashboards/data/processed/texas_county_profile.csv",
     index=False
 )
 
