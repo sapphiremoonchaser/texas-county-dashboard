@@ -7,6 +7,13 @@ import pandas as pd
 from texas_county_dashboards.scripts.census_client import CensusClient
 
 
+MERGE_KEYS = [
+    "state",
+    "county",
+    "NAME"
+]
+
+
 class CountyAnalytics:
 
     def __init__(
@@ -36,62 +43,24 @@ class CountyAnalytics:
             housing_profile
         :return: one merged dataframe
         """
-        df = self.county_profile.copy()
-
-        # Merge county profile and education profile
-        df = df.merge(
+        profiles = [
+            self.county_profile,
             self.education_profile,
-            on=[
-                "state",
-                "county",
-                "NAME"
-            ],
-            how="left"
-        )
-
-        # Merge above df with employment profile
-        df = df.merge(
             self.employment_profile,
-            on=[
-                "state",
-                "county",
-                "NAME"
-            ],
-            how="left"
-        )
-
-        # Merge above df with demographics profile
-        df = df.merge(
             self.demographics_profile,
-            on=[
-                "state",
-                "county",
-                "NAME"
-            ],
-            how="left"
-        )
-
-        # Merge above with economics dataframe
-        df = df.merge(
             self.economics_profile,
-            on=[
-                "state",
-                "county",
-                "NAME"
-            ],
-            how="left"
-        )
+            self.housing_profile
+        ]
 
-        # Merge above with housing dataframe
-        df = df.merge(
-            self.housing_profile,
-            on=[
-                "state",
-                "county",
-                "NAME"
-            ],
-            how="left"
-        )
+        # Copy county profile
+        df = profiles[0].copy()
+
+        for profile in profiles[1:]:
+            df = df.merge(
+                profile,
+                on=MERGE_KEYS,
+                how="left"
+            )
 
         return df
 
