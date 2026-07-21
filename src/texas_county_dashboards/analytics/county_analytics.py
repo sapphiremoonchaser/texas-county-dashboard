@@ -19,15 +19,21 @@ class CountyAnalytics:
         self.county_profile = None
         self.education_profile = None
         self.employment_profile = None
+        self.demographics_profile = None
+        self.economics_profile = None
+        self.housing_profile = None
         self.df = None
 
 
     def _merge_data(self) -> pd.DataFrame:
         """
-        Merge the following 3 dataframes:
+        Merge the following 6 dataframes:
             county_profile
             education_profile
             employment_profile
+            demogrphics_profile
+            economics_profile
+            housing_profile
         :return: one merged dataframe
         """
         df = self.county_profile.copy()
@@ -46,6 +52,39 @@ class CountyAnalytics:
         # Merge above df with employment profile
         df = df.merge(
             self.employment_profile,
+            on=[
+                "state",
+                "county",
+                "NAME"
+            ],
+            how="left"
+        )
+
+        # Merge above df with demographics profile
+        df = df.merge(
+            self.demographics_profile,
+            on=[
+                "state",
+                "county",
+                "NAME"
+            ],
+            how="left"
+        )
+
+        # Merge above with economics dataframe
+        df = df.merge(
+            self.economics_profile,
+            on=[
+                "state",
+                "county",
+                "NAME"
+            ],
+            how="left"
+        )
+
+        # Merge above with housing dataframe
+        df = df.merge(
+            self.housing_profile,
             on=[
                 "state",
                 "county",
@@ -78,6 +117,24 @@ class CountyAnalytics:
         self.employment_profile = (
             self.census_client
             .employment_profile()
+        )
+
+        # Load demographics profile
+        self.demographics_profile = (
+            self.census_client
+            .demographics_profile()
+        )
+
+        # Load economics profile
+        self.economics_profile = (
+            self.census_client
+            .economics_profile()
+        )
+
+        # Load housing profile
+        self.housing_profile = (
+            self.census_client
+            .housing_profile()
         )
 
         # Merge all of the data
