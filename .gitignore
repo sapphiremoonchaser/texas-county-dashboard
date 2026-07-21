@@ -75,6 +75,8 @@ data/processed/*
 
 src/texas_county_dashboards/data/raw/*
 
+*/data/*
+
 # ==========================
 # OS Files
 # ==========================
