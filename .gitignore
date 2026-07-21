@@ -73,7 +73,7 @@ data/raw/*
 data/processed/*
 !data/processed/.gitkeep
 
-src/data/raw/*
+src/texas_county_dashboards/data/raw/*
 
 # ==========================
 # OS Files
