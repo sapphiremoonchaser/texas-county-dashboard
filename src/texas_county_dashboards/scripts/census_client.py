@@ -152,6 +152,25 @@ class CensusClient:
         return df[columns]
 
 
+    def _add_geoid(
+        self,
+        df: pd.DataFrame
+    ) -> pd.DataFrame:
+        """
+        Create 5-digit county FIPS codes.
+        :param df:
+        :return:
+        """
+
+        df["GEOID"] = (
+            df["state"].astype(str).zfill(2)
+            +
+            df["county"].astype(str).zfill(3)
+        )
+
+        return df
+
+
     def county_profile(self) -> pd.DataFrame:
         """
         Download Census data and return a dataframe.
