@@ -11,6 +11,7 @@ from texas_county_dashboards.variables.education_profile import EDUCATION_PROFIL
 from texas_county_dashboards.variables.employment_profile import EMPLOYMENT_PROFILE
 from texas_county_dashboards.variables.demographics_profile import DEMOGRAPHICS_PROFILE
 from texas_county_dashboards.variables.economics_profile import ECONOMICS_PROFILE
+from texas_county_dashboards.variables.housing_profile import HOUSING_PROFILE
 
 
 class CensusClient:
@@ -302,6 +303,42 @@ class CensusClient:
             "county",
             "NAME",
             *ECONOMICS_PROFILE.keys()
+        ]
+
+        df = df[columns]
+
+        return df
+
+
+    def housing_profile(self) -> pd.DataFrame:
+        """
+        Download housing data from census api.
+
+        :return: dataframe with housing data
+        """
+        # Build list of variables to request
+        variables = [
+            "NAME",
+            *HOUSING_PROFILE.values()
+        ]
+
+        df = self._get(
+            variables=variables,
+            geography=TEXAS_COUNTIES
+        )
+
+        # Clean data by renaming columns and changing numberes to numerical datatypes
+        df = self._clean_dataframe(
+            df,
+            HOUSING_PROFILE
+        )
+
+        # Reorder the columns
+        columns = [
+            "state",
+            "county",
+            "NAME",
+            *HOUSING_PROFILE.keys()
         ]
 
         df = df[columns]
