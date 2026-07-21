@@ -84,6 +84,18 @@ class CountyAnalytics:
         return self.df
 
 
+    def save_data(
+        self,
+        path: str
+    ):
+        """
+        Save processed county analytics data.
+        :param path: path to savve to
+        :return:
+        """
+        self.df.to_parquet(path, index=False)
+
+
     def calculate_metrics(self) -> pd.DataFrame:
         """
         Create derived county metrics.
