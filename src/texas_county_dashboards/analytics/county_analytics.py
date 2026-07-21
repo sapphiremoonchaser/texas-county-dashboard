@@ -118,8 +118,42 @@ class CountyAnalytics:
 
         return self.df
 
-    # ToDo: highest_income_counties()
 
-    # ToDo: largest_counties()
+    def highest_income_counties(
+        self,
+        n=10
+    ) -> pd.DataFrame:
+        """
+        Sort counties by highest income.
 
-    pass
+        :param n: top n counties
+        :return: top n counties dataframe
+        """
+        return (
+            self.df
+            .sort_values(
+                "median_income",
+                ascending=False
+            )
+            .head(n)
+        )
+
+
+    def largest_counties(
+        self,
+        n=10
+    ) -> pd.DataFrame:
+        """
+        Sort counties by largest population.
+
+        :param n: top n counties
+        :return: dataframe with top n largest counties by population
+        """
+        return (
+            self.df
+            .sort_values(
+                "population",
+                ascending=False
+            )
+            .head(n)
+        )
