@@ -82,3 +82,9 @@ src/texas_county_dashboards/data/raw/*
 .DS_Store
 Thumbs.db
 desktop.ini
+
+# ==========================
+# Data Files
+# ==========================
+*.csv
+*.parquet
