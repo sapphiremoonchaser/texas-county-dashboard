@@ -9,7 +9,8 @@ from texas_county_dashboards.scripts.census_client import CensusClient
 MERGE_KEYS = [
     "state",
     "county",
-    "NAME"
+    "NAME",
+    "GEOID"
 ]
 
 

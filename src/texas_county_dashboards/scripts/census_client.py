@@ -166,9 +166,13 @@ class CensusClient:
         """
 
         df["GEOID"] = (
-            df["state"].astype(str).zfill(2)
+            df["state"]
+            .astype(str)
+            .str.zfill(2)
             +
-            df["county"].astype(str).zfill(3)
+            df["county"]
+            .astype(str)
+            .str.zfill(3)
         )
 
         return df
