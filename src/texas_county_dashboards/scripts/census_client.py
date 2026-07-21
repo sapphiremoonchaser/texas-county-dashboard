@@ -141,10 +141,13 @@ class CensusClient:
             variables
         )
 
+        df = self._add_geoid(df)
+
         # Standard profile columns
         columns = [
             "state",
             "county",
+            "GEOID",
             "NAME",
             *variables.keys()
         ]
