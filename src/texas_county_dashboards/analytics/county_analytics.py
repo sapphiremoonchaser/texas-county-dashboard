@@ -70,41 +70,14 @@ class CountyAnalytics:
         Load county_profile, education_profile, and employment_profile.
         :return: one dataframe with merged data
         """
-        # Load the county profile
-        self.county_profile = (
-            self.census_client
-            .county_profile()
-        )
 
-        # Load the education profile
-        self.education_profile = (
-            self.census_client
-            .education_profile()
-        )
-
-        # Load the employment profile
-        self.employment_profile = (
-            self.census_client
-            .employment_profile()
-        )
-
-        # Load demographics profile
-        self.demographics_profile = (
-            self.census_client
-            .demographics_profile()
-        )
-
-        # Load economics profile
-        self.economics_profile = (
-            self.census_client
-            .economics_profile()
-        )
-
-        # Load housing profile
-        self.housing_profile = (
-            self.census_client
-            .housing_profile()
-        )
+        # Load census profiles
+        self.county_profile = self.census_client.county_profile()
+        self.education_profile = self.census_client.education_profile()
+        self.employment_profile = self.census_client.employment_profile()
+        self.demographics_profile = self.census_client.demographics_profile()
+        self.economics_profile = self.census_client.economics_profile()
+        self.housing_profile = self.census_client.housing_profile()
 
         # Merge all of the data
         self.df = self._merge_data()
