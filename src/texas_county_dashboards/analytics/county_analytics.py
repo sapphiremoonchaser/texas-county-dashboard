@@ -156,6 +156,14 @@ class CountyAnalytics:
             * 100
         )
 
+        # Calculate percentage of people on snap
+        self.df["percent_with_snap"] = (
+            self.df["households_with_snap"]
+            /
+            self.df["population"]
+            * 100
+        )
+
         return self.df
 
 
