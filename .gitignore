@@ -73,6 +73,8 @@ data/raw/*
 data/processed/*
 !data/processed/.gitkeep
 
+src/data/raw/*
+
 # ==========================
 # OS Files
 # ==========================
