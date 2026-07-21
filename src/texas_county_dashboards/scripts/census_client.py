@@ -110,132 +110,79 @@ class CensusClient:
         return df
 
 
-    def county_profile(self) -> pd.DataFrame:
+    def _profile(
+        self,
+        variables: dict[str, str]
+    ) -> pd.DataFrame:
         """
-        Download Census data and return a dataframe.
-        Columns:
-            state
-            county
-            NAME
-            population
-            median_income
-            median_age
+        Download and clean a Census profile.
 
-        Returns
-            df: Pandas DataFrame with requested columns from census api
+        Parameters:
+            variables (dict): Dictionary mapping friendly names to census variables.
+
+        Returns:
+            Cleaned dataframe.
         """
-        # Build list of variables to request
-        variables = [
+
+        # Add NAME so we keep the count name
+        census_variables = [
             "NAME",
-            *COUNTY_PROFILE.values()
+            *variables.values()
         ]
 
         df = self._get(
-            variables=variables,
+            variables=census_variables,
             geography=TEXAS_COUNTIES
         )
 
-        # Clean data by renaming columns and chaning number to numerical datatype
+        # Rename columns and convert numeric columns
         df = self._clean_dataframe(
             df,
-            COUNTY_PROFILE
+            variables
         )
 
-        # Reorder the columns
+        # Standard profile columns
         columns = [
             "state",
             "county",
             "NAME",
-            *COUNTY_PROFILE.keys()
+            *variables.keys()
         ]
 
-        print(df.columns.to_list())
+        return df[columns]
 
-        df = df[columns]
 
-        return df
+    def county_profile(self) -> pd.DataFrame:
+        """
+        Download Census data and return a dataframe.
+
+        Returns
+            df: Pandas DataFrame with requested columns from census api
+        """
+
+        return self._profile(COUNTY_PROFILE)
 
 
     def education_profile(self) -> pd.DataFrame:
         """
         Download education Census data and return a dataframe.
-        Columns:
-            county
-            population_24_plus
-            bachelors_plus
-            bachelors_plus_pct
 
         Returns
             df: Pandas DataFrame with requested columns from census api
         """
-        # Build list of variables to request
-        variables = [
-            "NAME",
-            *EDUCATION_PROFILE.values(),
-        ]
 
-        df = self._get(
-            variables=variables,
-            geography=TEXAS_COUNTIES
-        )
-
-        # Clean data by renaming columns and chaning number to numerical datatype
-        df = self._clean_dataframe(
-            df,
-            EDUCATION_PROFILE
-        )
-
-        # Reorder the columns
-        columns = [
-            "state",
-            "county",
-            "NAME",
-            *EDUCATION_PROFILE.keys()
-        ]
-
-        df = df[columns]
-
-        return df
+        return self._profile(EDUCATION_PROFILE)
 
 
     def employment_profile(self) -> pd.DataFrame:
         """
         Download employment Census data and return a dataframe.
-        Columns:
-            labor force
-            unemployed
 
         Returns
             df: Pandas DataFrame with requested columns from census api
         """
-        # Build list of variables to request
-        variables = [
-            "NAME",
-            *EMPLOYMENT_PROFILE.values()
-        ]
 
-        df = self._get(
-            variables=variables,
-            geography=TEXAS_COUNTIES
-        )
-
-        # Clean data by renaming columns and chaning number to numerical datatype
-        df = self._clean_dataframe(
-            df,
-            EMPLOYMENT_PROFILE
-        )
-
-        # Reorder the columns
-        columns = [
-            "state",
-            "county",
-            "NAME",
-            *EMPLOYMENT_PROFILE.keys()
-        ]
-
-        df = df[columns]
-
-        return df
+        return self._profile(EMPLOYMENT_PROFILE)
 
 
     def demographics_profile(self) -> pd.DataFrame:
@@ -244,34 +191,8 @@ class CensusClient:
 
         :return: dataframe with demographics data
         """
-        # Build list of variables to request
-        variables = [
-            "NAME",
-            *DEMOGRAPHICS_PROFILE.values()
-        ]
 
-        df = self._get(
-            variables=variables,
-            geography=TEXAS_COUNTIES
-        )
-
-        # Clean data by renaming columns and changing numberes to numerical datatypes
-        df = self._clean_dataframe(
-            df,
-            DEMOGRAPHICS_PROFILE
-        )
-
-        # Reorder the columns
-        columns = [
-            "state",
-            "county",
-            "NAME",
-            *DEMOGRAPHICS_PROFILE.keys()
-        ]
-
-        df = df[columns]
-
-        return df
+        return self._profile(DEMOGRAPHICS_PROFILE)
 
 
     def economics_profile(self) -> pd.DataFrame:
@@ -280,34 +201,8 @@ class CensusClient:
 
         :return: dataframe with economic data
         """
-        # Build list of variables to request
-        variables = [
-            "NAME",
-            *ECONOMICS_PROFILE.values()
-        ]
 
-        df = self._get(
-            variables=variables,
-            geography=TEXAS_COUNTIES
-        )
-
-        # Clean data by renaming columns and changing numberes to numerical datatypes
-        df = self._clean_dataframe(
-            df,
-            ECONOMICS_PROFILE
-        )
-
-        # Reorder the columns
-        columns = [
-            "state",
-            "county",
-            "NAME",
-            *ECONOMICS_PROFILE.keys()
-        ]
-
-        df = df[columns]
-
-        return df
+        return self._profile(ECONOMICS_PROFILE)
 
 
     def housing_profile(self) -> pd.DataFrame:
@@ -316,31 +211,6 @@ class CensusClient:
 
         :return: dataframe with housing data
         """
-        # Build list of variables to request
-        variables = [
-            "NAME",
-            *HOUSING_PROFILE.values()
-        ]
 
-        df = self._get(
-            variables=variables,
-            geography=TEXAS_COUNTIES
-        )
+        return self._profile(HOUSING_PROFILE)
 
-        # Clean data by renaming columns and changing numberes to numerical datatypes
-        df = self._clean_dataframe(
-            df,
-            HOUSING_PROFILE
-        )
-
-        # Reorder the columns
-        columns = [
-            "state",
-            "county",
-            "NAME",
-            *HOUSING_PROFILE.keys()
-        ]
-
-        df = df[columns]
-
-        return df
