@@ -291,6 +291,27 @@ class CountyAnalytics:
         return self.df
 
 
+    def top_n(
+        self,
+        metric: str,
+        n: int = 10,
+        ascending: bool = False
+    ) -> pd.DataFrame:
+        """
+        Return the top n counties based on the metric passed in.
+
+        :param metric: Metric to be compared.
+        :param n: Top n counties.
+        :param ascending: ascending behavior, True or False
+        :return: dataframe sorted by metric
+        """
+        return (
+            self.df
+            .sort_values(metric, ascending=ascending)
+            .head(n)
+        )
+
+
     def save_data(
         self,
         path: str
