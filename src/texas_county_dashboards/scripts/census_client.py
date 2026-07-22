@@ -12,7 +12,6 @@ from texas_county_dashboards.variables.employment import EMPLOYMENT_PROFILE
 from texas_county_dashboards.variables.demographics import DEMOGRAPHICS_PROFILE
 from texas_county_dashboards.variables.economics import ECONOMICS_PROFILE
 from texas_county_dashboards.variables.housing import HOUSING_PROFILE
-from texas_county_dashboards.cache import DataCache
 
 
 class CensusClient:
@@ -35,9 +34,6 @@ class CensusClient:
         self.url = (
             f"{self.BASE_URL}/{self.year}/{self.dataset}"
         )
-
-        # Check for cahced data
-        self.cache = DataCache()
 
 
     def _get(
