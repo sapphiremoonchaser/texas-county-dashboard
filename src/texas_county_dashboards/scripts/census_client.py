@@ -12,6 +12,7 @@ from texas_county_dashboards.variables.employment import EMPLOYMENT_PROFILE
 from texas_county_dashboards.variables.demographics import DEMOGRAPHICS_PROFILE
 from texas_county_dashboards.variables.economics import ECONOMICS_PROFILE
 from texas_county_dashboards.variables.housing import HOUSING_PROFILE
+from texas_county_dashboards.cache import DataCache
 
 
 class CensusClient:
