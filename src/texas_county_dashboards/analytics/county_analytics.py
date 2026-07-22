@@ -254,7 +254,7 @@ class CountyAnalytics:
         self._calculate_percentage(
             "renter_occupied_units",
             "occupied_housing_units",
-            "percent_of_homes_rented"
+            "percent_of_occupied_homes_rented"
         )
 
         # Calculate homeownership rate
