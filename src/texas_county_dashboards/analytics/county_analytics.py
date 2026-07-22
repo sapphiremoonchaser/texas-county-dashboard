@@ -201,16 +201,17 @@ class CountyAnalytics:
             - percent with less than 9th grade education
         """
         # Calculate percent of people with a bachelor's degree or higher
-        self.df["bachelors_plus_pct"] = (
-            (
-                self.df["bachelors"]
-                + self.df["masters"]
-                + self.df["professional"]
-                + self.df["doctorate"]
-            )
-            /
-            self.df["population_25_plus"]
-            * 100
+        self.df["bachelors_plus"] = (
+            self.df["bachelors"]
+            + self.df["masters"]
+            + self.df["professional"]
+            + self.df["doctorate"]
+        )
+
+        self._calculate_percentage(
+            "bachelors_plus",
+            "populations_25_plus",
+            "perent_bachelors_plus"
         )
 
         # Calculate percent of people with less than a high school degree
