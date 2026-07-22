@@ -32,6 +32,9 @@ class CountyAnalytics:
         self.housing_profile = None
         self.df = None
 
+        # Check for cached data
+        self.cache = DataCache()
+
 
     def _merge_data(self) -> pd.DataFrame:
         """
