@@ -3,7 +3,6 @@ Variables used for Demographics Profile.
 """
 
 DEMOGRAPHICS_PROFILE = {
-    "total_population": "B01003_001E",
 
     # Age
     "median_age": "B01002_001E",
