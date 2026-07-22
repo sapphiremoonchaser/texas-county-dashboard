@@ -65,6 +65,28 @@ class CountyAnalytics:
         return df
 
 
+    def _calculate_percentage(
+        self,
+            numerator: str,
+            denominator: str,
+            output: str
+    ):
+        """
+        Helper function for calculating percentages.
+
+        :param numerator:
+        :param denominator:
+        :param output:
+        :return:
+        """
+        self.df[output] = (
+            self.df[numerator]
+            /
+            self.df[denominator]
+            * 100
+        )
+
+
     def load_data(self) -> pd.DataFrame:
         """
         Load county_profile, education_profile, and employment_profile.
@@ -100,11 +122,25 @@ class CountyAnalytics:
     def calculate_metrics(self) -> pd.DataFrame:
         """
         Create derived county metrics.
-            - bachelors_plus_pct
-            - unemployment_rate
-            - poverty_rate
-            - homeownership_rate
-            - vacancy_rate
+            - percent female
+            - percent male
+            - percent white
+            - percent black
+            - percent native american
+            - percent asian
+            - percent native hawaiian
+            - percent other race
+            - percent two or more races
+            - percent hispanic
+            - poverty rate
+            - percent with snap
+            - percent with bachelors degree or higher
+            - percent with less than 9th grade education
+            - unemployment rate
+            - percent homes occupied
+            - percent of homes rented
+            - homeownership rate
+            - vacancy rate
         :return: df including original and derived metrics
         """
 
@@ -113,99 +149,87 @@ class CountyAnalytics:
             self.load_data()
 
         # Calculate percent female
-        self.df["percent_female"] = (
-            self.df["female_population"]
-            /
-            self.df["population"]
-            * 100
+        self._calculate_percentage(
+            "female_population",
+            "population",
+            "percent_female"
         )
 
         # Calculate percent male
-        self.df["percent_male"] = (
-            self.df["male_population"]
-            /
-            self.df["population"]
-            * 100
+        self._calculate_percentage(
+            "male_population",
+            "population",
+            "percent_male"
         )
 
         # Calculate percent white
-        self.df["percent_white"] = (
-            self.df["white_population"]
-            /
-            self.df["population"]
-            * 100
+        self._calculate_percentage(
+            "white_population",
+            "population",
+            "percent_white"
         )
 
         # Calculate percent black
-        self.df["percent_black"] = (
-            self.df["black_population"]
-            /
-            self.df["population"]
-            * 100
+        self._calculate_percentage(
+            "black_population",
+            "population",
+            "percent_black"
         )
 
         # Calculate native american percent
-        self.df["percent_native_american"] = (
-            self.df["american_indian_population"]
-            /
-            self.df["population"]
-            * 100
+        self._calculate_percentage(
+            "american_indian_population",
+            "population",
+            "percent_native_american"
         )
 
         # Calculate percent asian
-        self.df["percent_asian"] = (
-            self.df["asian_population"]
-            /
-            self.df["population"]
-            * 100
+        self._calculate_percentage(
+            "asian_population",
+            "population",
+            "percent_asian"
         )
 
         # Calculate native hawaiian percent
-        self.df["percent_native_hawaiian"] = (
-            self.df["native_hawaiian_population"]
-            /
-            self.df["population"]
-            * 100
+        self._calculate_percentage(
+            "native_hawaiian_population",
+            "population",
+            "percent_native_hawaiian"
         )
 
         # Calculate percent other race
-        self.df["percent_other_race"] = (
-            self.df["other_race_population"]
-            /
-            self.df["population"]
-            * 100
+        self._calculate_percentage(
+            "other_race_population",
+            "population",
+            "percent_other_race"
         )
 
         # Calculate percent 2 or more races
-        self.df["percent_two_or_more"] = (
-            self.df["two_or_more_population"]
-            /
-            self.df["population"]
-            * 100
+        self._calculate_percentage(
+            "two_or_more_population",
+            "population",
+            "percent_two_or_more"
         )
 
         # Calculate percent hispanic
-        self.df["percent_hispanic"] = (
-            self.df["hispanic_population"]
-            /
-            self.df["population"]
-            * 100
+        self._calculate_percentage(
+            "hispanic_population",
+            "population",
+            "percent_hispanic"
         )
 
         # Calculate poverty rate
-        self.df["poverty_rate"] = (
-                self.df["population_below_poverty"]
-                /
-                self.df["poverty_universe"]
-                * 100
+        self._calculate_percentage(
+            "population_below_poverty",
+            "poverty_universe",
+            "poverty_rate"
         )
 
         # Calculate percentage of people on snap
-        self.df["percent_with_snap"] = (
-                self.df["households_with_snap"]
-                /
-                self.df["population"]
-                * 100
+        self._calculate_percentage(
+            "households_with_snap",
+            "population",
+            "percent_with_snap"
         )
 
         # Calculate percent of people with a bachelor's degree or higher
@@ -222,51 +246,45 @@ class CountyAnalytics:
         )
 
         # Calculate percent of people with less than a high school degree
-        self.df["percent_less_than_nineth_grade"] = (
-            self.df["less_than_9th_grade"]
-            /
-            self.df["population_25_plus"]
-            * 100
+        self._calculate_percentage(
+            "less_than_9th_grade",
+            "population_25_plus",
+            "percent_less_than_9th_grade"
         )
 
         # Calculate unemployment rate
-        self.df["unemployment_rate"] = (
-            self.df["unemployed"]
-            /
-            self.df["labor_force"]
-            * 100
+        self._calculate_percentage(
+            "unemployed",
+            "labor_force",
+            "unemployment_rate"
         )
 
         # Percent of homes occupied
-        self.df["percent_of_homes_occupied"] = (
-            self.df["occupied_housing_units"]
-            /
-            self.df["housing_units"]
-            * 100
+        self._calculate_percentage(
+            "occupied_housing_units",
+            "housing_units",
+            "percent_of_homes_occupied"
         )
 
         # Percent of homes rented
-        self.df["percent_of_homes_rented"] = (
-            self.df['renter_occupied_units']
-            /
-            self.df["housing_units"]
-            * 100
+        self._calculate_percentage(
+            "renter_occupied_units",
+            "occupied_housing_units",
+            "percent_of_homes_rented"
         )
 
         # Calculate homeownership rate
-        self.df["homeownership_rate"] = (
-            self.df["owner_occupied_units"]
-            /
-            self.df["occupied_housing_units"]
-            * 100
+        self._calculate_percentage(
+            "owner_occupied_units",
+            "occupied_housing_units",
+            "homeownership_rate"
         )
 
         # Calculate vacancy rate
-        self.df["vacancy_rate"] = (
-            self.df["vacant_housing_units"]
-            /
-            self.df["housing_units"]
-            * 100
+        self._calculate_percentage(
+            "vacant_housing_units",
+            "housing_units",
+            "vacancy_rate"
         )
 
         return self.df
