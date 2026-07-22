@@ -36,6 +36,9 @@ class CensusClient:
             f"{self.BASE_URL}/{self.year}/{self.dataset}"
         )
 
+        # Check for cahced data
+        self.cache = DataCache()
+
 
     def _get(
         self,
