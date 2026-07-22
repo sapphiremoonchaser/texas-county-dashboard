@@ -70,7 +70,7 @@ class CountyAnalytics:
             numerator: str,
             denominator: str,
             output: str
-    ):
+    ) -> None:
         """
         Helper function for calculating percentages.
 
@@ -88,7 +88,7 @@ class CountyAnalytics:
         )
 
 
-    def _calculate_demographics(self):
+    def _calculate_demographics(self) -> None:
         """
         Create derived demographic metrics.
             - percent female
@@ -173,7 +173,7 @@ class CountyAnalytics:
         )
 
 
-    def _calculate_economics(self):
+    def _calculate_economics(self) -> None:
         """
         Create derived economic metrics.
             - poverty rate
@@ -194,7 +194,7 @@ class CountyAnalytics:
         )
 
 
-    def _calculate_education(self):
+    def _calculate_education(self) -> None:
         """
         Create derived education metrics.
             - percent with bachelors degree or higher
@@ -222,7 +222,7 @@ class CountyAnalytics:
         )
 
 
-    def _calculate_employment(self):
+    def _calculate_employment(self) -> None:
         """
         Create derived employment metrics.
             - unemployment rate
@@ -235,7 +235,7 @@ class CountyAnalytics:
         )
 
 
-    def _calculate_housing(self):
+    def _calculate_housing(self) -> None:
         """
         Create derived housing metrics.
             - percent homes occupied
@@ -294,7 +294,7 @@ class CountyAnalytics:
     def save_data(
         self,
         path: str
-    ):
+    ) -> None:
         """
         Save processed county analytics data.
         :param path: path to savve to
