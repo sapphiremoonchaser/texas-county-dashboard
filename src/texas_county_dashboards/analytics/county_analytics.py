@@ -81,9 +81,8 @@ class CountyAnalytics:
         """
         self.df[output] = (
             self.df[numerator]
-            /
-            self.df[denominator]
-            * 100
+            .div(self.df[denominator])
+            .mul(100)
         )
 
 
