@@ -12,6 +12,7 @@ dependencies = [
     "dash>=3.0",
     "requests>=2.32",
     "census>=0.8",
+    "streamlit>=1.50.0"
 ]
 
 [project.optional-dependencies]
