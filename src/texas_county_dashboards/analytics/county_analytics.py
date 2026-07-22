@@ -88,41 +88,9 @@ class CountyAnalytics:
         )
 
 
-    def load_data(self) -> pd.DataFrame:
+    def _calculate_demographics(self):
         """
-        Load county_profile, education_profile, and employment_profile.
-        :return: one dataframe with merged data
-        """
-
-        # Load census profiles
-        self.county_profile = self.census_client.county_profile()
-        self.education_profile = self.census_client.education_profile()
-        self.employment_profile = self.census_client.employment_profile()
-        self.demographics_profile = self.census_client.demographics_profile()
-        self.economics_profile = self.census_client.economics_profile()
-        self.housing_profile = self.census_client.housing_profile()
-
-        # Merge all of the data
-        self.df = self._merge_data()
-
-        return self.df
-
-
-    def save_data(
-        self,
-        path: str
-    ):
-        """
-        Save processed county analytics data.
-        :param path: path to savve to
-        :return:
-        """
-        self.df.to_parquet(path, index=False)
-
-
-    def calculate_metrics(self) -> pd.DataFrame:
-        """
-        Create derived county metrics.
+        Create derived demographic metrics.
             - percent female
             - percent male
             - percent white
@@ -133,22 +101,7 @@ class CountyAnalytics:
             - percent other race
             - percent two or more races
             - percent hispanic
-            - poverty rate
-            - percent with snap
-            - percent with bachelors degree or higher
-            - percent with less than 9th grade education
-            - unemployment rate
-            - percent homes occupied
-            - percent of homes rented
-            - homeownership rate
-            - vacancy rate
-        :return: df including original and derived metrics
         """
-
-        # Make sure the data is loaded
-        if self.df is None:
-            self.load_data()
-
         # Calculate percent female
         self._calculate_percentage(
             "female_population",
@@ -219,6 +172,13 @@ class CountyAnalytics:
             "percent_hispanic"
         )
 
+
+    def _calculate_economics(self):
+        """
+        Create derived economic metrics.
+            - poverty rate
+            - percent with snap
+        """
         # Calculate poverty rate
         self._calculate_percentage(
             "population_below_poverty",
@@ -233,6 +193,13 @@ class CountyAnalytics:
             "percent_with_snap"
         )
 
+
+    def _calculate_education(self):
+        """
+        Create derived education metrics.
+            - percent with bachelors degree or higher
+            - percent with less than 9th grade education
+        """
         # Calculate percent of people with a bachelor's degree or higher
         self.df["bachelors_plus_pct"] = (
             (
@@ -253,6 +220,12 @@ class CountyAnalytics:
             "percent_less_than_9th_grade"
         )
 
+
+    def _calculate_employment(self):
+        """
+        Create derived employment metrics.
+            - unemployment rate
+        """
         # Calculate unemployment rate
         self._calculate_percentage(
             "unemployed",
@@ -260,6 +233,15 @@ class CountyAnalytics:
             "unemployment_rate"
         )
 
+
+    def _calculate_housing(self):
+        """
+        Create derived housing metrics.
+            - percent homes occupied
+            - percent of homes rented
+            - homeownership rate
+            - vacancy rate
+        """
         # Percent of homes occupied
         self._calculate_percentage(
             "occupied_housing_units",
@@ -287,6 +269,54 @@ class CountyAnalytics:
             "housing_units",
             "vacancy_rate"
         )
+
+    def load_data(self) -> pd.DataFrame:
+        """
+        Load county_profile, education_profile, and employment_profile.
+        :return: one dataframe with merged data
+        """
+
+        # Load census profiles
+        self.county_profile = self.census_client.county_profile()
+        self.education_profile = self.census_client.education_profile()
+        self.employment_profile = self.census_client.employment_profile()
+        self.demographics_profile = self.census_client.demographics_profile()
+        self.economics_profile = self.census_client.economics_profile()
+        self.housing_profile = self.census_client.housing_profile()
+
+        # Merge all of the data
+        self.df = self._merge_data()
+
+        return self.df
+
+
+    def save_data(
+        self,
+        path: str
+    ):
+        """
+        Save processed county analytics data.
+        :param path: path to savve to
+        :return:
+        """
+        self.df.to_parquet(path, index=False)
+
+
+    def calculate_metrics(self) -> pd.DataFrame:
+        """
+        Create derived county metrics.
+        :return: df including original and derived metrics
+        """
+
+        # Make sure the data is loaded
+        if self.df is None:
+            self.load_data()
+
+        self._calculate_demographics()
+        self._calculate_economics()
+        self._calculate_education()
+        self._calculate_employment()
+        self._calculate_housing()
 
         return self.df
 
