@@ -246,7 +246,7 @@ class CountyAnalytics:
 
         # Calculate percent of people with less than a high school degree
         self._calculate_percentage(
-            "less_than_9th_grade",
+            "less_than_ninth_grade",
             "population_25_plus",
             "percent_less_than_9th_grade"
         )
@@ -299,6 +299,9 @@ class CountyAnalytics:
         :param n: top n counties
         :return: top n counties dataframe
         """
+        if self.df is None:
+            self.calculate_metrics()
+
         return (
             self.df
             .sort_values(
@@ -319,6 +322,9 @@ class CountyAnalytics:
         :param n: top n counties
         :return: dataframe with top n largest counties by population
         """
+        if self.df is None:
+            self.calculate_metrics()
+
         return (
             self.df
             .sort_values(
