@@ -5,6 +5,7 @@ Combines and Calculates
 import pandas as pd
 
 from texas_county_dashboards.scripts.census_client import CensusClient
+from texas_county_dashboards.cache import DataCache
 
 MERGE_KEYS = [
     "state",
