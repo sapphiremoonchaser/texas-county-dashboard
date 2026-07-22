@@ -275,11 +275,18 @@ class CountyAnalytics:
             "vacancy_rate"
         )
 
-    def load_data(self) -> pd.DataFrame:
+    def load_data(
+        self,
+        refresh=False
+    ) -> pd.DataFrame:
         """
         Load county_profile, education_profile, and employment_profile.
-        :return: one dataframe with merged data
+        :return: one dataframe with merged data. Check to see if data is
+        cached first.
         """
+        if self.cache.exists() and not refresh:
+            self.df = self.cache.load()
+            return self.df
 
         # Load census profiles
         self.county_profile = self.census_client.county_profile()
@@ -291,6 +298,8 @@ class CountyAnalytics:
 
         # Merge all of the data
         self.df = self._merge_data()
+
+        self.cache.save(self.df)
 
         return self.df
 
