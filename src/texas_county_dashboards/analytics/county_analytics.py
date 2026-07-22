@@ -356,13 +356,9 @@ class CountyAnalytics:
         if self.df is None:
             self.calculate_metrics()
 
-        return (
-            self.df
-            .sort_values(
-                "median_household_income",
-                ascending=False
-            )
-            .head(n)
+        return self.top_n(
+            "highest_income_counties",
+            n=n
         )
 
 
@@ -379,13 +375,9 @@ class CountyAnalytics:
         if self.df is None:
             self.calculate_metrics()
 
-        return (
-            self.df
-            .sort_values(
-                "population",
-                ascending=False
-            )
-            .head(n)
+        return self.top_n(
+            "population",
+            n
         )
 
 
