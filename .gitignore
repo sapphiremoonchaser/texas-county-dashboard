@@ -85,10 +85,9 @@ src/texas_county_dashboards/data/raw/*
 Thumbs.db
 desktop.ini
 
-# ==========================
-# Data Files
-# ==========================
-*.csv
+# Generated data
 *.parquet
+
+# Census downloads
 *.zip
 *.geojson
