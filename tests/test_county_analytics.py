@@ -85,6 +85,13 @@ class FakeCensusClient:
         })
 
 
+# @pytest.fixture
+# def analytics():
+#
+#     return CountyAnalytics(
+#         FakeCensusClient()
+#     )
+
 def test_county_analytics_initialization():
     """
     Checks the constructor.
