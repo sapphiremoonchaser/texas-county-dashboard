@@ -5,6 +5,7 @@ Combines and Calculates
 import pandas as pd
 
 from texas_county_dashboards.scripts.census_client import CensusClient
+from texas_county_dashboards.cache import DataCache
 
 MERGE_KEYS = [
     "state",
@@ -30,6 +31,9 @@ class CountyAnalytics:
         self.economics_profile = None
         self.housing_profile = None
         self.df = None
+
+        # Check for cached data
+        self.cache = DataCache()
 
 
     def _merge_data(self) -> pd.DataFrame:
@@ -210,13 +214,13 @@ class CountyAnalytics:
 
         self._calculate_percentage(
             "bachelors_plus",
-            "populations_25_plus",
-            "perent_bachelors_plus"
+            "population_25_plus",
+            "percent_bachelors_plus"
         )
 
         # Calculate percent of people with less than a high school degree
         self._calculate_percentage(
-            "less_than_ninth_grade",
+            "less_than_9th_grade",
             "population_25_plus",
             "percent_less_than_9th_grade"
         )
@@ -271,11 +275,19 @@ class CountyAnalytics:
             "vacancy_rate"
         )
 
-    def load_data(self) -> pd.DataFrame:
+
+    def load_data(
+        self,
+        refresh=False
+    ) -> pd.DataFrame:
         """
         Load county_profile, education_profile, and employment_profile.
-        :return: one dataframe with merged data
+        :return: one dataframe with merged data. Check to see if data is
+        cached first.
         """
+        if self.cache.exists() and not refresh:
+            self.df = self.cache.load()
+            return self.df
 
         # Load census profiles
         self.county_profile = self.census_client.county_profile()
@@ -287,6 +299,8 @@ class CountyAnalytics:
 
         # Merge all of the data
         self.df = self._merge_data()
+
+        self.cache.save(self.df)
 
         return self.df
 
@@ -357,7 +371,7 @@ class CountyAnalytics:
             self.calculate_metrics()
 
         return self.top_n(
-            "highest_income_counties",
+            "median_household_income",
             n=n
         )
 

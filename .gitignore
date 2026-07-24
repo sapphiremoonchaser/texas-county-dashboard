@@ -73,7 +73,7 @@ data/raw/*
 data/processed/*
 !data/processed/.gitkeep
 
-src/texas_county_dashboards/data/raw/*
+data/raw/*
 
 */data/*
 

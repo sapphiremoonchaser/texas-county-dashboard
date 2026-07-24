@@ -85,13 +85,6 @@ class FakeCensusClient:
         })
 
 
-# @pytest.fixture
-# def analytics():
-#
-#     return CountyAnalytics(
-#         FakeCensusClient()
-#     )
-
 def test_county_analytics_initialization():
     """
     Checks the constructor.
@@ -103,6 +96,27 @@ def test_county_analytics_initialization():
 
     assert analytics.df is None
     assert analytics.county_profile is None
+
+
+def test_merge_data():
+
+    analytics = CountyAnalytics(
+        FakeCensusClient()
+    )
+
+    analytics.county_profile = analytics.census_client.county_profile()
+    analytics.education_profile = analytics.census_client.education_profile()
+    analytics.employment_profile = analytics.census_client.employment_profile()
+    analytics.demographics_profile = analytics.census_client.demographics_profile()
+    analytics.economics_profile = analytics.census_client.economics_profile()
+    analytics.housing_profile = analytics.census_client.housing_profile()
+
+    df = analytics._merge_data()
+
+    assert len(df) == 1
+    assert "population" in df.columns
+    assert "bachelors" in df.columns
+    assert "occupied_housing_units" in df.columns
 
 
 def test_load_data_merges_profiles():
@@ -124,6 +138,28 @@ def test_load_data_merges_profiles():
     assert "population" in df.columns
     assert "bachelors" in df.columns
     assert "unemployed" in df.columns
+
+
+def test_calculate_percentage_handles_zero():
+
+    analytics = CountyAnalytics(
+        FakeCensusClient
+    )
+
+    analytics.df = pd.DataFrame({
+        "numerator": [10],
+        "denominator": [0]
+    })
+
+    analytics._calculate_percentage(
+        "numerator",
+        "denominator",
+        "result"
+    )
+
+    assert pd.isna(
+        analytics.df["result"].iloc[0]
+    )
 
 
 def test_calculate_percentage():
@@ -165,6 +201,71 @@ def test_calculated_metrics():
     assert "percent_female" in df.columns
     assert "unemployment_rate" in df.columns
     assert "homeownership_rate" in df.columns
+
+
+def test_calculated_demographics_metrics():
+    analytics = CountyAnalytics(
+        FakeCensusClient()
+    )
+
+    df = analytics.calculate_metrics()
+
+    assert df["percent_female"].iloc[0] == 50
+    assert df["percent_male"].iloc[0] == 50
+    assert df["percent_white"].iloc[0] == 70
+    assert df["percent_black"].iloc[0] == 20
+    assert df["percent_asian"].iloc[0] == 5
+    assert df["percent_native_hawaiian"].iloc[0] == 0.5
+    assert df["percent_other_race"].iloc[0] == 2
+    assert df["percent_two_or_more"].iloc[0] == 1.5
+    assert df["percent_hispanic"].iloc[0] == 10
+
+
+def test_calculated_economic_metrics():
+
+    analytics = CountyAnalytics(
+        FakeCensusClient
+    )
+
+    df = analytics.calculate_metrics()
+
+    assert df["poverty_rate"].iloc[0] == 10
+    assert df["percent_with_snap"].iloc[0] == 20
+
+
+def test_calculated_education_metrics():
+    analytics = CountyAnalytics(
+        FakeCensusClient()
+    )
+
+    df = analytics.calculate_metrics()
+
+    assert df["bachelors_plus"].iloc[0] == 165
+    assert df["percent_bachelors_plus"].iloc[0] == 33
+    assert df["percent_less_than_9th_grade"].iloc[0] == 10
+
+
+def test_calculated_employment_metrics():
+    analytics = CountyAnalytics(
+        FakeCensusClient
+    )
+
+    df = analytics.calculate_metrics()
+
+    assert df["unemployment_rate"].iloc[0] == 10
+
+
+def test_calculated_housing_metrics():
+    analytics = CountyAnalytics(
+        FakeCensusClient()
+    )
+
+    df = analytics.calculate_metrics()
+
+    assert df["percent_of_homes_occupied"].iloc[0] == 90
+    assert df["percent_of_occupied_homes_rented"].iloc[0] == pytest.approx(44.44, abs=0.01)
+    assert df["homeownership_rate"].iloc[0] == pytest.approx(55.56, abs=0.01)
+    assert df["vacancy_rate"].iloc[0] == 10
 
 
 def test_highest_income_counties():
