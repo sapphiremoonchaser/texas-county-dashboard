@@ -214,13 +214,13 @@ class CountyAnalytics:
 
         self._calculate_percentage(
             "bachelors_plus",
-            "populations_25_plus",
-            "perent_bachelors_plus"
+            "population_25_plus",
+            "percent_bachelors_plus"
         )
 
         # Calculate percent of people with less than a high school degree
         self._calculate_percentage(
-            "less_than_ninth_grade",
+            "less_than_9th_grade",
             "population_25_plus",
             "percent_less_than_9th_grade"
         )
@@ -274,6 +274,7 @@ class CountyAnalytics:
             "housing_units",
             "vacancy_rate"
         )
+
 
     def load_data(
         self,
