@@ -184,18 +184,17 @@ class CountyAnalytics:
 
     def _calculate_economics(self) -> None:
         """
-        Create derived economic metrics.
-            - poverty rate
-            - percent with snap
+        Calculate metrics around poverty and government assistance.
+
+        Returns:
+            None. Adds calculated columns to self.df.
         """
-        # Calculate poverty rate
         self._calculate_percentage(
             "population_below_poverty",
             "poverty_universe",
             "poverty_rate"
         )
 
-        # Calculate percentage of people on snap
         self._calculate_percentage(
             "households_with_snap",
             "population",
@@ -205,11 +204,12 @@ class CountyAnalytics:
 
     def _calculate_education(self) -> None:
         """
-        Create derived education metrics.
-            - percent with bachelors degree or higher
-            - percent with less than 9th grade education
+        Calculate educated and uneducated percentages of population.
+
+        Returns:
+            None. Adds calculated metrics to self.df.
         """
-        # Calculate percent of people with a bachelor's degree or higher
+        # Calculate total number of people with a bachelors degree or higher
         self.df["bachelors_plus"] = (
             self.df["bachelors"]
             + self.df["masters"]
@@ -223,7 +223,6 @@ class CountyAnalytics:
             "perent_bachelors_plus"
         )
 
-        # Calculate percent of people with less than a high school degree
         self._calculate_percentage(
             "less_than_ninth_grade",
             "population_25_plus",
