@@ -220,7 +220,7 @@ class CountyAnalytics:
         self._calculate_percentage(
             "bachelors_plus",
             "populations_25_plus",
-            "perent_bachelors_plus"
+            "percent_bachelors_plus"
         )
 
         self._calculate_percentage(
