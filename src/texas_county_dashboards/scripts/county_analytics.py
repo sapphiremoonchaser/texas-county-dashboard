@@ -7,6 +7,7 @@ ranking and analyzing counties.
 """
 
 import pandas as pd
+from jinja2.utils import missing
 
 from texas_county_dashboards.scripts.census_client import CensusClient
 
@@ -60,6 +61,27 @@ class CountyAnalytics:
         self.calculate_metrics()
 
         return self.df
+
+
+    def _validate_dataframe(self) -> None:
+        """
+        Validate required columns exist before calculation.
+        """
+
+        required_columns = [
+            "population",
+            "median_household_income",
+            "housing_units"
+        ]
+
+        missing = (
+            set(required_columns) - set(self.df.columns)
+        )
+
+        if missing:
+            raise ValueError(
+                f"Missing required columns: {missing}"
+            )
 
 
     def _merge_data(self) -> pd.DataFrame:
@@ -291,6 +313,20 @@ class CountyAnalytics:
         )
 
 
+    def run(self) -> pd.DataFrame:
+        """
+        Execute the full analytics pipeline.
+
+        Returns:
+            DataFrame containing county metrics
+        """
+
+        self.load_data()
+        self.calculate_metrics()
+
+        return self.df
+
+
     def load_data(self) -> pd.DataFrame:
         """
         Retrieve Census datasets and merge them into one dataframe.
@@ -373,6 +409,8 @@ class CountyAnalytics:
         # Make sure the data is loaded
         if self.df is None:
             self.load_data()
+
+        self._validate_dataframe()
 
         self._calculate_demographics()
         self._calculate_economics()
