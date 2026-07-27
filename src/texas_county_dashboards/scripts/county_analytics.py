@@ -8,6 +8,7 @@ ranking and analyzing counties.
 
 import pandas as pd
 from jinja2.utils import missing
+from pandas import set_eng_float_format
 
 from texas_county_dashboards.scripts.census_client import CensusClient
 
@@ -313,6 +314,45 @@ class CountyAnalytics:
         )
 
 
+    def _round_metrics(self) -> None:
+        """
+        Round calculated metrics.
+        """
+
+        percentage_columns = [
+            col for col in self.df.columns
+            if col.startswith("percent")
+            or col.endswith("rate")
+        ]
+
+        self.df[percentage_columns] = (
+            self.df[percentage_columns]
+            .round(2)
+        )
+
+
+    def _organize_columns(self) -> None:
+        """
+        Arrange dataframe columns into logical groups.
+        """
+
+        id_columns = [
+            "NAME",
+            "GEOID",
+            "state",
+            "county"
+        ]
+
+        metric_columns = sorted(
+            c for c in self.df.columns
+            if c not in id_columns
+        )
+
+        self.df = self.df[
+            id_columns + metric_columns
+        ]
+
+
     def run(self) -> pd.DataFrame:
         """
         Execute the full analytics pipeline.
@@ -417,6 +457,8 @@ class CountyAnalytics:
         self._calculate_education()
         self._calculate_employment()
         self._calculate_housing()
+
+        self._round_metrics()
 
         return self.df
 
