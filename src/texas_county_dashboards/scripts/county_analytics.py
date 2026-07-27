@@ -87,12 +87,18 @@ class CountyAnalytics:
             output: str
     ) -> None:
         """
-        Helper function for calculating percentages.
+        Caclulate a percentage metric and store it in the dataframe.
 
-        :param numerator:
-        :param denominator:
-        :param output:
-        :return:
+        Division by zero values are replaced with missing values
+        to prevent invalid calculations.
+
+        Args:
+            numerator (str): Column containing the count being measured
+            denominator (str): Column containing the population base.
+            output (str): Name of the new percentage column
+
+        Returns:
+            None. Adds a new column  to self.df
         """
         self.df[output] = (
             self.df[numerator]
