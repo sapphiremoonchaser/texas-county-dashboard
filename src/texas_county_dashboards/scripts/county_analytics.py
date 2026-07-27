@@ -232,10 +232,8 @@ class CountyAnalytics:
 
     def _calculate_employment(self) -> None:
         """
-        Create derived employment metrics.
-            - unemployment rate
+        Calculate the unemployment rate.
         """
-        # Calculate unemployment rate
         self._calculate_percentage(
             "unemployed",
             "labor_force",
@@ -245,34 +243,33 @@ class CountyAnalytics:
 
     def _calculate_housing(self) -> None:
         """
-        Create derived housing metrics.
-            - percent homes occupied
-            - percent of homes rented
-            - homeownership rate
-            - vacancy rate
+        Calculate housing percentage metrics.
+
+        Creates percentage values for:
+            - home occupancy
+            - home ownership
+
+        Returns:
+            None. Adds calculated columns to self.df.
         """
-        # Percent of homes occupied
         self._calculate_percentage(
             "occupied_housing_units",
             "housing_units",
             "percent_of_homes_occupied"
         )
 
-        # Percent of homes rented
         self._calculate_percentage(
             "renter_occupied_units",
             "occupied_housing_units",
             "percent_of_occupied_homes_rented"
         )
 
-        # Calculate homeownership rate
         self._calculate_percentage(
             "owner_occupied_units",
             "occupied_housing_units",
             "homeownership_rate"
         )
 
-        # Calculate vacancy rate
         self._calculate_percentage(
             "vacant_housing_units",
             "housing_units",
