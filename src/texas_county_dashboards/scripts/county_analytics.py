@@ -376,14 +376,16 @@ class CountyAnalytics:
         """
         Sort counties by highest income.
 
-        :param n: top n counties
-        :return: top n counties dataframe
+        Args:
+            n: top n counties
+        Returns:
+            DataFrame with the top n counties by highest income.
         """
         if self.df is None:
             self.calculate_metrics()
 
         return self.top_n(
-            "highest_income_counties",
+            "median_income_counties",
             n=n
         )
 
@@ -395,8 +397,10 @@ class CountyAnalytics:
         """
         Sort counties by largest population.
 
-        :param n: top n counties
-        :return: dataframe with top n largest counties by population
+        Args:
+            n: top n counties
+        Returns:
+            DataFrame with top n largest counties by population
         """
         if self.df is None:
             self.calculate_metrics()
