@@ -463,6 +463,25 @@ class CountyAnalytics:
         return self.df
 
 
+    def get_county(
+        self,
+        county_name: str
+    ) -> pd.DataFrame:
+        """
+        Returns metrics for a single county.
+
+        Args:
+            county_name: name of the county being returned
+
+        Returns:
+            DataFrame containing metrics for a single county
+        """
+
+        return self.df[
+            self.df["NAME"] == county_name
+        ]
+
+
     def highest_income_counties(
         self,
         n=10
@@ -505,22 +524,69 @@ class CountyAnalytics:
         )
 
 
-    def get_count(
+    def highest_poverty_counties(
         self,
-        county_name: str
+        n=10
     ) -> pd.DataFrame:
         """
-        Returns metrics for a single county.
+        Sort counties based on highest poverty rate.
 
         Args:
-            county_name: name of the county being returned
+            n: top n counties
 
         Returns:
-            DataFrame containing metrics for a single county
+            DataFrame with top n highest poverty rates by county.
         """
+        if self.df is None:
+            self.calculate_metrics()
 
-        return self.df[
-            self.df["NAME"] == county_name
-        ]
+        return self.top_n(
+            "povery_rate",
+            n
+        )
+
+
+    def highest_education_counties(
+        self,
+        n=10
+    ):
+        """
+        Sort counties based on highest education rate.
+
+        Args:
+            n: top n counties
+
+        Returns:
+            DataFrame with top n highest education rates by county.
+        """
+        if self.df is None:
+            self.calculate_metrics()
+
+        return self.top_n(
+            "percent_bachelors_plus",
+            n
+        )
+
+
+    def highest_unemployment_counties(
+        self,
+        n=10
+    ):
+        """
+        Sort counties based on highest unemployment rate.
+
+        Args:
+            n: top n counties
+
+        Returns:
+            DataFrame with top n highest unemployment rates by county.
+        """
+        if self.df is None:
+            self.calculate_metrics()
+
+        return self.top_n(
+            "unemployment_rate",
+            n
+        )
 
 
