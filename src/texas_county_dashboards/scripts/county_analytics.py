@@ -1,7 +1,11 @@
 """
-Analyze Texas county Census data.
-Combines and Calculates
+Provides analytics functionality for Texas county Census data.
+
+This module combines Census datasets from multiple profiles,
+creates derived county-level metrics, and provides methods for
+ranking and analyzing counties.
 """
+
 import pandas as pd
 
 from texas_county_dashboards.scripts.census_client import CensusClient
@@ -15,12 +19,24 @@ MERGE_KEYS = [
 
 
 class CountyAnalytics:
+    """
+    Analyze and transform county Census data.
 
+    This class combines Census profile datasets, calculates
+    derived demographic, economic, education, employment,
+    and housing metrics, and provides analytical methods
+    for comparing counties.
+
+    Attributes:
+        census_client (CensusClient): Client used to retrieve Census data.
+        df: DataFrame containing merged county data and calculated metrics.
+    """
     def __init__(
         self,
         census_client: CensusClient
     ):
-        # Save variables that were passed in
+        # Store the variable so data can be retrieved lazily
+        # when analytics are requested
         self.census_client = census_client
 
         self.county_profile = None
@@ -34,14 +50,13 @@ class CountyAnalytics:
 
     def _merge_data(self) -> pd.DataFrame:
         """
-        Merge the following 6 dataframes:
-            county_profile
-            education_profile
-            employment_profile
-            demogrphics_profile
-            economics_profile
-            housing_profile
-        :return: one merged dataframe
+        Merge Census profile DataFrame into a single county dataset.
+
+        Each profile is joined using the shared geographic identifier:
+        state, county, NAME, and GEOID.
+
+        Returns:
+            DataFrame containing all merged county-lebel Census data.
         """
         profiles = [
             self.county_profile,
@@ -55,7 +70,7 @@ class CountyAnalytics:
         # Copy county profile
         df = profiles[0].copy()
 
-        for profile in profiles[1:]:
+        for profile in profiles[1:]: # skip county bc we started with it
             df = df.merge(
                 profile,
                 on=MERGE_KEYS,
