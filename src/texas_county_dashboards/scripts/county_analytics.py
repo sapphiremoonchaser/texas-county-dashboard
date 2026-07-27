@@ -311,14 +311,19 @@ class CountyAnalytics:
         """
         Return the top n counties based on the metric passed in.
 
-        :param metric: Metric to be compared.
-        :param n: Top n counties.
-        :param ascending: ascending behavior, True or False
-        :return: dataframe sorted by metric
+        Args:
+            metric: Metric to be compared.
+            n: Top n counties.
+            ascending: ascending behavior, True or False
+        Returns:
+            DataFrame sorted by metric
         """
         return (
             self.df
-            .sort_values(metric, ascending=ascending)
+            .sort_values(
+                metric,
+                ascending=ascending
+            )
             .head(n)
         )
 
@@ -329,8 +334,12 @@ class CountyAnalytics:
     ) -> None:
         """
         Save processed county analytics data.
-        :param path: path to savve to
-        :return:
+
+        Args:
+            path: path to savve to
+
+        Returns:
+            None. Saves the dataframe as a parquet file.
         """
         self.df.to_parquet(path, index=False)
 
