@@ -111,82 +111,70 @@ class CountyAnalytics:
 
     def _calculate_demographics(self) -> None:
         """
-        Create derived demographic metrics.
-            - percent female
-            - percent male
-            - percent white
-            - percent black
-            - percent native american
-            - percent asian
-            - percent native hawaiian
-            - percent other race
-            - percent two or more races
-            - percent hispanic
+        Calculate demographic percentage metrics.
+
+        Creates percentage values for:
+            - Gender distribution
+            - Race distribution
+            - Hispanic population
+
+        Returns:
+            None. Adds calculated columns to self.df.
         """
-        # Calculate percent female
         self._calculate_percentage(
             "female_population",
             "population",
             "percent_female"
         )
 
-        # Calculate percent male
         self._calculate_percentage(
             "male_population",
             "population",
             "percent_male"
         )
 
-        # Calculate percent white
         self._calculate_percentage(
             "white_population",
             "population",
             "percent_white"
         )
 
-        # Calculate percent black
         self._calculate_percentage(
             "black_population",
             "population",
             "percent_black"
         )
 
-        # Calculate native american percent
         self._calculate_percentage(
             "american_indian_population",
             "population",
             "percent_native_american"
         )
 
-        # Calculate percent asian
         self._calculate_percentage(
             "asian_population",
             "population",
             "percent_asian"
         )
 
-        # Calculate native hawaiian percent
         self._calculate_percentage(
             "native_hawaiian_population",
             "population",
             "percent_native_hawaiian"
         )
 
-        # Calculate percent other race
         self._calculate_percentage(
             "other_race_population",
             "population",
             "percent_other_race"
         )
 
-        # Calculate percent 2 or more races
         self._calculate_percentage(
             "two_or_more_population",
             "population",
             "percent_two_or_more"
         )
 
-        # Calculate percent hispanic
         self._calculate_percentage(
             "hispanic_population",
             "population",
