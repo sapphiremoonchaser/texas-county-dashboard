@@ -333,10 +333,10 @@ class CountyAnalytics:
         path: str
     ) -> None:
         """
-        Save processed county analytics data.
+        Save processed analytics to a parquet file.
 
         Args:
-            path: path to savve to
+            path: File location where the dataframe will be saved.
 
         Returns:
             None. Saves the dataframe as a parquet file.
