@@ -48,6 +48,20 @@ class CountyAnalytics:
         self.df = None
 
 
+    def run(self) -> pd.DataFrame:
+        """
+        Execute the full analytics pipeline.
+
+        Returns:
+            DataFrame containing county metrics
+        """
+
+        self.load_data()
+        self.calculate_metrics()
+
+        return self.df
+
+
     def _merge_data(self) -> pd.DataFrame:
         """
         Merge Census profile DataFrame into a single county dataset.
