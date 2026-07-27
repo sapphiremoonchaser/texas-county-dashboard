@@ -230,6 +230,9 @@ def test_run_returns_complete_dataframe():
 
 
 def test_calculate_percentage():
+    analytics = CountyAnalytics(
+        FakeCensusClient()
+    )
 
     analytics.df = pd.DataFrame({
         "a": [50],
