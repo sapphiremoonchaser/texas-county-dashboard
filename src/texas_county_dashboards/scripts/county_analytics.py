@@ -276,10 +276,16 @@ class CountyAnalytics:
             "vacancy_rate"
         )
 
+
     def load_data(self) -> pd.DataFrame:
         """
-        Load county_profile, education_profile, and employment_profile.
-        :return: one dataframe with merged data
+        Retrieve Census datasets and merge them into one dataframe.
+
+        The loaded datasets include demographic, economic,
+        education, employment, housing, and county profile data.
+
+        Returns:
+            DataFrame containing merged county Census data.
         """
 
         # Load census profiles
