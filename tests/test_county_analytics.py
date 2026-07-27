@@ -1,6 +1,5 @@
 import pandas as pd
 import pytest
-from examples.geography.plot_maps import df
 
 from texas_county_dashboards.scripts.county_analytics import CountyAnalytics
 
@@ -227,6 +226,22 @@ def test_run_returns_complete_dataframe():
 
     assert df is not None
     assert "percent_white" in df.columns
-    assert "poverty_rate" int df.columns
+    assert "poverty_rate" in df.columns
+
+
+def test_calculate_percentage():
+
+    analytics.df = pd.DataFrame({
+        "a": [50],
+        "b": [100]
+    })
+
+    analytics._calculate_percentage(
+        "a",
+        "b",
+        "result"
+    )
+
+    assert analytics.df["result"].iloc[0] == 50
 
 

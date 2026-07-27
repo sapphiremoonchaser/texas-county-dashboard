@@ -256,12 +256,12 @@ class CountyAnalytics:
 
         self._calculate_percentage(
             "bachelors_plus",
-            "populations_25_plus",
+            "population_25_plus",
             "percent_bachelors_plus"
         )
 
         self._calculate_percentage(
-            "less_than_ninth_grade",
+            "less_than_9th_grade",
             "population_25_plus",
             "percent_less_than_9th_grade"
         )
