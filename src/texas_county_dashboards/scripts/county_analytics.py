@@ -505,3 +505,22 @@ class CountyAnalytics:
         )
 
 
+    def get_count(
+        self,
+        county_name: str
+    ) -> pd.DataFrame:
+        """
+        Returns metrics for a single county.
+
+        Args:
+            county_name: name of the county being returned
+
+        Returns:
+            DataFrame containing metrics for a single county
+        """
+
+        return self.df[
+            self.df["NAME"] == county_name
+        ]
+
+
