@@ -346,8 +346,14 @@ class CountyAnalytics:
 
     def calculate_metrics(self) -> pd.DataFrame:
         """
-        Create derived county metrics.
-        :return: df including original and derived metrics
+        Calculate all derived county analytics metrics.
+
+        Loads Census data if it has not already been loaded,
+        the calculates metrics for demographics, economics,
+        education, employment, and housing.
+
+        Returns:
+            DataFrame containing raw Census data and calculated metrics.
         """
 
         # Make sure the data is loaded
