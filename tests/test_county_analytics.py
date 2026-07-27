@@ -1,5 +1,6 @@
 import pandas as pd
 import pytest
+from examples.geography.plot_maps import df
 
 from texas_county_dashboards.scripts.county_analytics import CountyAnalytics
 
@@ -214,3 +215,18 @@ def test_largest_counties():
     result = analytics.largest_counties(1)
 
     assert result.iloc[0]["NAME"] == "Large"
+
+
+def test_run_returns_complete_dataframe():
+
+    analytics = CountyAnalytics(
+        FakeCensusClient()
+    )
+
+    df = analytics.run()
+
+    assert df is not None
+    assert "percent_white" in df.columns
+    assert "poverty_rate" int df.columns
+
+
