@@ -12,6 +12,7 @@ from pandas import set_eng_float_format
 from pandas.core.interchange.from_dataframe import primitive_column_to_ndarray
 
 from texas_county_dashboards.scripts.census_client import CensusClient
+from texas_county_dashboards.scripts.boundary_loader import BoundaryLoader
 
 MERGE_KEYS = [
     "state",
@@ -493,7 +494,18 @@ class CountyAnalytics:
         # Merge all of the data
         self.df = self._merge_data()
 
-        return self.df
+        # Load the county boundaries
+        boundary_path = "C:/Users/viole/dev/projects/portfolio/texas-county-dashboard/src/texas_county_dashboards/data/processed/texas_county_analytics.parquet"
+
+        boundary_loader = BoundaryLoader(boundary_path=boundary_path)
+
+        boundaries = BoundaryLoader.load_texas_counties()
+
+        return self.df.merge(
+            boundaries,
+            on="GEOID",
+            how="left"
+        )
 
 
     def top_n(
