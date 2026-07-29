@@ -5,6 +5,7 @@ This module combines Census datasets from multiple profiles,
 creates derived county-level metrics, and provides methods for
 ranking and analyzing counties.
 """
+from pathlib import Path
 
 import pandas as pd
 from jinja2.utils import missing
@@ -20,6 +21,13 @@ MERGE_KEYS = [
     "NAME",
     "GEOID"
 ]
+
+BOUNDARY_FILE = (
+    Path(__file__).parent.parent
+    / "data"
+    / "raw"
+    /"tl_2024_us_county.zip"
+)
 
 
 class CountyAnalytics:
@@ -495,11 +503,10 @@ class CountyAnalytics:
         self.df = self._merge_data()
 
         # Load the county boundaries
-        boundary_path = "C:/Users/viole/dev/projects/portfolio/texas-county-dashboard/src/texas_county_dashboards/data/processed/texas_county_analytics.parquet"
+        boundary_loader = BoundaryLoader(
+            boundary_path=BOUNDARY_FILE)
 
-        boundary_loader = BoundaryLoader(boundary_path=boundary_path)
-
-        boundaries = BoundaryLoader.load_texas_counties()
+        boundaries = boundary_loader.load_texas_counties()
 
         return self.df.merge(
             boundaries,
