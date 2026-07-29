@@ -17,7 +17,7 @@ class BoundaryLoader:
 
         texas = counties[
             counties["STATEFP"] == '48'
-        ].copy
+        ].copy()
 
         return texas[
             [
