@@ -9,6 +9,7 @@ ranking and analyzing counties.
 import pandas as pd
 from jinja2.utils import missing
 from pandas import set_eng_float_format
+from pandas.core.interchange.from_dataframe import primitive_column_to_ndarray
 
 from texas_county_dashboards.scripts.census_client import CensusClient
 
@@ -201,6 +202,29 @@ class CountyAnalytics:
         )
 
 
+    def _calculate_percentile(
+        self,
+        column: str,
+        output: str
+    ) -> None:
+        """
+        Calculate what percentile the county is in for a particular metric.
+
+        Args:
+            column: Column to calculate percentile for.
+            output: Name of output column.
+
+        Returns:
+            None. Adds a column to self.df.
+        """
+
+        self.df[output] = (
+            self.df[column]
+            .rank(pct=True)
+            * 100
+        )
+
+
     def _calculate_demographics(self) -> None:
         """
         Calculate demographic percentage metrics.
@@ -293,6 +317,12 @@ class CountyAnalytics:
             "percent_with_snap"
         )
 
+        self._calculate_rank(
+            "poverty_rate",
+            "poverty_rank",
+            ascending=True
+        )
+
 
     def _calculate_education(self) -> None:
         """
@@ -302,6 +332,7 @@ class CountyAnalytics:
             None. Adds calculated metrics to self.df.
         """
         # Calculate total number of people with a bachelors degree or higher
+
         self.df["bachelors_plus"] = (
             self.df["bachelors"]
             + self.df["masters"]
@@ -321,6 +352,18 @@ class CountyAnalytics:
             "percent_less_than_9th_grade"
         )
 
+        self._calculate_rank(
+            "percent_bachelors_plus",
+            "education_rank",
+            ascending=True
+        )
+
+        self._calculate_percentage(
+            "high_school_graduate",
+            "population_25_plus",
+            "percent_high_school"
+        )
+
 
     def _calculate_employment(self) -> None:
         """
@@ -330,6 +373,12 @@ class CountyAnalytics:
             "unemployed",
             "labor_force",
             "unemployment_rate"
+        )
+
+        self._calculate_rank(
+            "unemployment_rate",
+            "unemployment_rank",
+            ascending=True
         )
 
 
@@ -512,6 +561,24 @@ class CountyAnalytics:
         self._calculate_education()
         self._calculate_employment()
         self._calculate_housing()
+
+        self._calculate_rank(
+            "median_household_income",
+            "median_income_rank",
+            ascending=True
+        )
+
+        self._calculate_rank(
+            "population",
+            "population_rank",
+            ascending=True
+        )
+
+        self._calculate_rank(
+            "median_household_income",
+            "income_percentile",
+            ascending=True
+        )
 
         self._round_metrics()
 
