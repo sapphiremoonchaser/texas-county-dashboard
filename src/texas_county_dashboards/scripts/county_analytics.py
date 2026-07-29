@@ -146,6 +146,61 @@ class CountyAnalytics:
         )
 
 
+    def _calculate_ratio(
+        self,
+        numerator: str,
+        denominator: str,
+        output: str
+    ) -> None:
+        """
+        Calculate a ratio metric and store it in a DataFrame.
+
+        Division by zero values are replaced with missing values
+        to prevent invalid calculations.
+
+        Args:
+            numerator: Numerator column
+            denominator: Denominator column
+            output: Name of output column
+
+        Returns:
+            None. Adds a column to self.df.
+        """
+
+        self.df[output] = (
+            self.df[numerator]
+            .div(self.df[denominator].replace(0, pd.NA))
+        )
+
+
+    def _calculate_rank(
+        self,
+        column: str,
+        output: str,
+        ascending: bool = False
+    ) -> None:
+        """
+        Rank counties by a metric.
+
+        Args:
+            column: Column to rank.
+            output: Output rank column.
+            ascending: Whether lower values receive better ranks.
+
+        Returns:
+            None. Adds a column to self.df.
+        """
+
+        self.df[output] = (
+            self.df[column]
+            .rank(
+                ascending=ascending,
+                method="dense"
+            )
+            .astype(int)
+        )
+
+
     def _calculate_demographics(self) -> None:
         """
         Calculate demographic percentage metrics.
