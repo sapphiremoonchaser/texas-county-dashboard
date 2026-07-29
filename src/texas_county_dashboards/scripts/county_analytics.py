@@ -367,11 +367,11 @@ class CountyAnalytics:
             ascending=True
         )
 
-        self._calculate_percentage(
-            "high_school_graduate",
-            "population_25_plus",
-            "percent_high_school"
-        )
+        # self._calculate_percentage(
+        #     "high_school_graduate",
+        #     "population_25_plus",
+        #     "percent_high_school"
+        # )
 
 
     def _calculate_employment(self) -> None:
