@@ -641,7 +641,7 @@ class CountyAnalytics:
             self.calculate_metrics()
 
         return self.top_n(
-            "median_income_counties",
+            "median_household_income",
             n=n
         )
 
