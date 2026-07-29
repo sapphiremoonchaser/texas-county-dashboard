@@ -315,3 +315,48 @@ def test_largest_counties():
     result = analytics.largest_counties(1)
 
     assert result.iloc[0]["NAME"] == "Large"
+
+
+def test_run_returns_complete_dataframe():
+
+    analytics = CountyAnalytics(
+        FakeCensusClient()
+    )
+
+    df = analytics.run()
+
+    assert df is not None
+    assert "percent_white" in df.columns
+    assert "poverty_rate" in df.columns
+
+
+def test_calculate_percentage():
+    analytics = CountyAnalytics(
+        FakeCensusClient()
+    )
+
+    analytics.df = pd.DataFrame({
+        "a": [50],
+        "b": [100]
+    })
+
+    analytics._calculate_percentage(
+        "a",
+        "b",
+        "result"
+    )
+
+    assert analytics.df["result"].iloc[0] == 50
+
+
+def test_boundary_merge():
+    analytics = CountyAnalytics(
+        FakeCensusClient()
+    )
+
+    analytics.load_data()
+
+    assert "geometry" in analytics.df.columns
+    assert len(analytics.df) == 1
+    assert analytics.df["geometry"].notna().all()
+

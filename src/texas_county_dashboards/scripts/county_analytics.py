@@ -1,10 +1,19 @@
 """
-Analyze Texas county Census data.
-Combines and Calculates
+Provides analytics functionality for Texas county Census data.
+
+This module combines Census datasets from multiple profiles,
+creates derived county-level metrics, and provides methods for
+ranking and analyzing counties.
 """
+from pathlib import Path
+
 import pandas as pd
+from jinja2.utils import missing
+from pandas import set_eng_float_format
+from pandas.core.interchange.from_dataframe import primitive_column_to_ndarray
 
 from texas_county_dashboards.scripts.census_client import CensusClient
+from texas_county_dashboards.scripts.boundary_loader import BoundaryLoader
 from texas_county_dashboards.cache import DataCache
 
 MERGE_KEYS = [
@@ -14,14 +23,33 @@ MERGE_KEYS = [
     "GEOID"
 ]
 
+BOUNDARY_FILE = (
+    Path(__file__).parent.parent
+    / "data"
+    / "raw"
+    /"tl_2024_us_county.zip"
+)
+
 
 class CountyAnalytics:
+    """
+    Analyze and transform county Census data.
 
+    This class combines Census profile datasets, calculates
+    derived demographic, economic, education, employment,
+    and housing metrics, and provides analytical methods
+    for comparing counties.
+
+    Attributes:
+        census_client (CensusClient): Client used to retrieve Census data.
+        df: DataFrame containing merged county data and calculated metrics.
+    """
     def __init__(
         self,
         census_client: CensusClient
     ):
-        # Save variables that were passed in
+        # Store the variable so data can be retrieved lazily
+        # when analytics are requested
         self.census_client = census_client
 
         self.county_profile = None
@@ -36,16 +64,50 @@ class CountyAnalytics:
         self.cache = DataCache()
 
 
+    def run(self) -> pd.DataFrame:
+        """
+        Execute the full analytics pipeline.
+
+        Returns:
+            DataFrame containing county metrics
+        """
+
+        self.load_data()
+        self.calculate_metrics()
+
+        return self.df
+
+
+    def _validate_dataframe(self) -> None:
+        """
+        Validate required columns exist before calculation.
+        """
+
+        required_columns = [
+            "population",
+            "median_household_income",
+            "housing_units"
+        ]
+
+        missing = (
+            set(required_columns) - set(self.df.columns)
+        )
+
+        if missing:
+            raise ValueError(
+                f"Missing required columns: {missing}"
+            )
+
+
     def _merge_data(self) -> pd.DataFrame:
         """
-        Merge the following 6 dataframes:
-            county_profile
-            education_profile
-            employment_profile
-            demogrphics_profile
-            economics_profile
-            housing_profile
-        :return: one merged dataframe
+        Merge Census profile DataFrame into a single county dataset.
+
+        Each profile is joined using the shared geographic identifier:
+        state, county, NAME, and GEOID.
+
+        Returns:
+            DataFrame containing all merged county-lebel Census data.
         """
         profiles = [
             self.county_profile,
@@ -59,7 +121,7 @@ class CountyAnalytics:
         # Copy county profile
         df = profiles[0].copy()
 
-        for profile in profiles[1:]:
+        for profile in profiles[1:]: # skip county bc we started with it
             df = df.merge(
                 profile,
                 on=MERGE_KEYS,
@@ -76,12 +138,18 @@ class CountyAnalytics:
             output: str
     ) -> None:
         """
-        Helper function for calculating percentages.
+        Caclulate a percentage metric and store it in the dataframe.
 
-        :param numerator:
-        :param denominator:
-        :param output:
-        :return:
+        Division by zero values are replaced with missing values
+        to prevent invalid calculations.
+
+        Args:
+            numerator (str): Column containing the count being measured
+            denominator (str): Column containing the population base.
+            output (str): Name of the new percentage column
+
+        Returns:
+            None. Adds a new column  to self.df
         """
         self.df[output] = (
             self.df[numerator]
@@ -92,84 +160,150 @@ class CountyAnalytics:
         )
 
 
+    def _calculate_ratio(
+        self,
+        numerator: str,
+        denominator: str,
+        output: str
+    ) -> None:
+        """
+        Calculate a ratio metric and store it in a DataFrame.
+
+        Division by zero values are replaced with missing values
+        to prevent invalid calculations.
+
+        Args:
+            numerator: Numerator column
+            denominator: Denominator column
+            output: Name of output column
+
+        Returns:
+            None. Adds a column to self.df.
+        """
+
+        self.df[output] = (
+            self.df[numerator]
+            .div(self.df[denominator].replace(0, pd.NA))
+        )
+
+
+    def _calculate_rank(
+        self,
+        column: str,
+        output: str,
+        ascending: bool = False
+    ) -> None:
+        """
+        Rank counties by a metric.
+
+        Args:
+            column: Column to rank.
+            output: Output rank column.
+            ascending: Whether lower values receive better ranks.
+
+        Returns:
+            None. Adds a column to self.df.
+        """
+
+        self.df[output] = (
+            self.df[column]
+            .rank(
+                ascending=ascending,
+                method="dense"
+            )
+            .astype(int)
+        )
+
+
+    def _calculate_percentile(
+        self,
+        column: str,
+        output: str
+    ) -> None:
+        """
+        Calculate what percentile the county is in for a particular metric.
+
+        Args:
+            column: Column to calculate percentile for.
+            output: Name of output column.
+
+        Returns:
+            None. Adds a column to self.df.
+        """
+
+        self.df[output] = (
+            self.df[column]
+            .rank(pct=True)
+            * 100
+        )
+
+
     def _calculate_demographics(self) -> None:
         """
-        Create derived demographic metrics.
-            - percent female
-            - percent male
-            - percent white
-            - percent black
-            - percent native american
-            - percent asian
-            - percent native hawaiian
-            - percent other race
-            - percent two or more races
-            - percent hispanic
+        Calculate demographic percentage metrics.
+
+        Creates percentage values for:
+            - Gender distribution
+            - Race distribution
+            - Hispanic population
+
+        Returns:
+            None. Adds calculated columns to self.df.
         """
-        # Calculate percent female
         self._calculate_percentage(
             "female_population",
             "population",
             "percent_female"
         )
 
-        # Calculate percent male
         self._calculate_percentage(
             "male_population",
             "population",
             "percent_male"
         )
 
-        # Calculate percent white
         self._calculate_percentage(
             "white_population",
             "population",
             "percent_white"
         )
 
-        # Calculate percent black
         self._calculate_percentage(
             "black_population",
             "population",
             "percent_black"
         )
 
-        # Calculate native american percent
         self._calculate_percentage(
             "american_indian_population",
             "population",
             "percent_native_american"
         )
 
-        # Calculate percent asian
         self._calculate_percentage(
             "asian_population",
             "population",
             "percent_asian"
         )
 
-        # Calculate native hawaiian percent
         self._calculate_percentage(
             "native_hawaiian_population",
             "population",
             "percent_native_hawaiian"
         )
 
-        # Calculate percent other race
         self._calculate_percentage(
             "other_race_population",
             "population",
             "percent_other_race"
         )
 
-        # Calculate percent 2 or more races
         self._calculate_percentage(
             "two_or_more_population",
             "population",
             "percent_two_or_more"
         )
 
-        # Calculate percent hispanic
         self._calculate_percentage(
             "hispanic_population",
             "population",
@@ -179,32 +313,39 @@ class CountyAnalytics:
 
     def _calculate_economics(self) -> None:
         """
-        Create derived economic metrics.
-            - poverty rate
-            - percent with snap
+        Calculate metrics around poverty and government assistance.
+
+        Returns:
+            None. Adds calculated columns to self.df.
         """
-        # Calculate poverty rate
         self._calculate_percentage(
             "population_below_poverty",
             "poverty_universe",
             "poverty_rate"
         )
 
-        # Calculate percentage of people on snap
         self._calculate_percentage(
             "households_with_snap",
             "population",
             "percent_with_snap"
         )
 
+        self._calculate_rank(
+            "poverty_rate",
+            "poverty_rank",
+            ascending=True
+        )
+
 
     def _calculate_education(self) -> None:
         """
-        Create derived education metrics.
-            - percent with bachelors degree or higher
-            - percent with less than 9th grade education
+        Calculate educated and uneducated percentages of population.
+
+        Returns:
+            None. Adds calculated metrics to self.df.
         """
-        # Calculate percent of people with a bachelor's degree or higher
+        # Calculate total number of people with a bachelors degree or higher
+
         self.df["bachelors_plus"] = (
             self.df["bachelors"]
             + self.df["masters"]
@@ -218,57 +359,71 @@ class CountyAnalytics:
             "percent_bachelors_plus"
         )
 
-        # Calculate percent of people with less than a high school degree
         self._calculate_percentage(
             "less_than_9th_grade",
             "population_25_plus",
             "percent_less_than_9th_grade"
         )
 
+        self._calculate_rank(
+            "percent_bachelors_plus",
+            "education_rank",
+            ascending=True
+        )
+
+        self._calculate_percentage(
+            "high_school_graduate",
+            "population_25_plus",
+            "percent_high_school"
+        )
+
 
     def _calculate_employment(self) -> None:
         """
-        Create derived employment metrics.
-            - unemployment rate
+        Calculate the unemployment rate.
         """
-        # Calculate unemployment rate
         self._calculate_percentage(
             "unemployed",
             "labor_force",
             "unemployment_rate"
         )
 
+        self._calculate_rank(
+            "unemployment_rate",
+            "unemployment_rank",
+            ascending=True
+        )
+
 
     def _calculate_housing(self) -> None:
         """
-        Create derived housing metrics.
-            - percent homes occupied
-            - percent of homes rented
-            - homeownership rate
-            - vacancy rate
+        Calculate housing percentage metrics.
+
+        Creates percentage values for:
+            - home occupancy
+            - home ownership
+
+        Returns:
+            None. Adds calculated columns to self.df.
         """
-        # Percent of homes occupied
         self._calculate_percentage(
             "occupied_housing_units",
             "housing_units",
             "percent_of_homes_occupied"
         )
 
-        # Percent of homes rented
         self._calculate_percentage(
             "renter_occupied_units",
             "occupied_housing_units",
             "percent_of_occupied_homes_rented"
         )
 
-        # Calculate homeownership rate
         self._calculate_percentage(
             "owner_occupied_units",
             "occupied_housing_units",
             "homeownership_rate"
         )
 
-        # Calculate vacancy rate
         self._calculate_percentage(
             "vacant_housing_units",
             "housing_units",
@@ -276,6 +431,68 @@ class CountyAnalytics:
         )
 
 
+    def _round_metrics(self) -> None:
+        """
+        Round calculated metrics.
+        """
+
+        percentage_columns = [
+            col for col in self.df.columns
+            if col.startswith("percent")
+            or col.endswith("rate")
+        ]
+
+        self.df[percentage_columns] = (
+            self.df[percentage_columns]
+            .round(2)
+        )
+
+
+    def _organize_columns(self) -> None:
+        """
+        Arrange dataframe columns into logical groups.
+        """
+
+        id_columns = [
+            "NAME",
+            "GEOID",
+            "state",
+            "county"
+        ]
+
+        metric_columns = sorted(
+            c for c in self.df.columns
+            if c not in id_columns
+        )
+
+        self.df = self.df[
+            id_columns + metric_columns
+        ]
+
+
+    def run(self) -> pd.DataFrame:
+        """
+        Execute the full analytics pipeline.
+
+        Returns:
+            DataFrame containing county metrics
+        """
+
+        self.load_data()
+        self.calculate_metrics()
+
+        return self.df
+
+
+    def load_data(self) -> pd.DataFrame:
+        """
+        Retrieve Census datasets and merge them into one dataframe.
+
+        The loaded datasets include demographic, economic,
+        education, employment, housing, and county profile data.
+
+        Returns:
+            DataFrame containing merged county Census data.
     def load_data(
         self,
         refresh=False
@@ -300,6 +517,17 @@ class CountyAnalytics:
         # Merge all of the data
         self.df = self._merge_data()
 
+        # Load the county boundaries
+        boundary_loader = BoundaryLoader(
+            boundary_path=BOUNDARY_FILE)
+
+        boundaries = boundary_loader.load_texas_counties()
+
+        self.df = self.df.merge(
+            boundaries,
+            on="GEOID",
+            how="left"
+        )
         self.cache.save(self.df)
 
         return self.df
@@ -314,14 +542,19 @@ class CountyAnalytics:
         """
         Return the top n counties based on the metric passed in.
 
-        :param metric: Metric to be compared.
-        :param n: Top n counties.
-        :param ascending: ascending behavior, True or False
-        :return: dataframe sorted by metric
+        Args:
+            metric: Metric to be compared.
+            n: Top n counties.
+            ascending: ascending behavior, True or False
+        Returns:
+            DataFrame sorted by metric
         """
         return (
             self.df
-            .sort_values(metric, ascending=ascending)
+            .sort_values(
+                metric,
+                ascending=ascending
+            )
             .head(n)
         )
 
@@ -331,22 +564,34 @@ class CountyAnalytics:
         path: str
     ) -> None:
         """
-        Save processed county analytics data.
-        :param path: path to savve to
-        :return:
+        Save processed analytics to a parquet file.
+
+        Args:
+            path: File location where the dataframe will be saved.
+
+        Returns:
+            None. Saves the dataframe as a parquet file.
         """
         self.df.to_parquet(path, index=False)
 
 
     def calculate_metrics(self) -> pd.DataFrame:
         """
-        Create derived county metrics.
-        :return: df including original and derived metrics
+        Calculate all derived county analytics metrics.
+
+        Loads Census data if it has not already been loaded,
+        the calculates metrics for demographics, economics,
+        education, employment, and housing.
+
+        Returns:
+            DataFrame containing raw Census data and calculated metrics.
         """
 
         # Make sure the data is loaded
         if self.df is None:
             self.load_data()
+
+        self._validate_dataframe()
 
         self._calculate_demographics()
         self._calculate_economics()
@@ -354,7 +599,46 @@ class CountyAnalytics:
         self._calculate_employment()
         self._calculate_housing()
 
+        self._calculate_rank(
+            "median_household_income",
+            "median_income_rank",
+            ascending=True
+        )
+
+        self._calculate_rank(
+            "population",
+            "population_rank",
+            ascending=True
+        )
+
+        self._calculate_rank(
+            "median_household_income",
+            "income_percentile",
+            ascending=True
+        )
+
+        self._round_metrics()
+
         return self.df
+
+
+    def get_county(
+        self,
+        county_name: str
+    ) -> pd.DataFrame:
+        """
+        Returns metrics for a single county.
+
+        Args:
+            county_name: name of the county being returned
+
+        Returns:
+            DataFrame containing metrics for a single county
+        """
+
+        return self.df[
+            self.df["NAME"] == county_name
+        ]
 
 
     def highest_income_counties(
@@ -364,13 +648,16 @@ class CountyAnalytics:
         """
         Sort counties by highest income.
 
-        :param n: top n counties
-        :return: top n counties dataframe
+        Args:
+            n: top n counties
+        Returns:
+            DataFrame with the top n counties by highest income.
         """
         if self.df is None:
             self.calculate_metrics()
 
         return self.top_n(
+            "median_income_counties",
             "median_household_income",
             n=n
         )
@@ -383,14 +670,82 @@ class CountyAnalytics:
         """
         Sort counties by largest population.
 
-        :param n: top n counties
-        :return: dataframe with top n largest counties by population
+        Args:
+            n: top n counties
+        Returns:
+            DataFrame with top n largest counties by population
         """
         if self.df is None:
             self.calculate_metrics()
 
         return self.top_n(
             "population",
+            n
+        )
+
+
+    def highest_poverty_counties(
+        self,
+        n=10
+    ) -> pd.DataFrame:
+        """
+        Sort counties based on highest poverty rate.
+
+        Args:
+            n: top n counties
+
+        Returns:
+            DataFrame with top n highest poverty rates by county.
+        """
+        if self.df is None:
+            self.calculate_metrics()
+
+        return self.top_n(
+            "povery_rate",
+            n
+        )
+
+
+    def highest_education_counties(
+        self,
+        n=10
+    ):
+        """
+        Sort counties based on highest education rate.
+
+        Args:
+            n: top n counties
+
+        Returns:
+            DataFrame with top n highest education rates by county.
+        """
+        if self.df is None:
+            self.calculate_metrics()
+
+        return self.top_n(
+            "percent_bachelors_plus",
+            n
+        )
+
+
+    def highest_unemployment_counties(
+        self,
+        n=10
+    ):
+        """
+        Sort counties based on highest unemployment rate.
+
+        Args:
+            n: top n counties
+
+        Returns:
+            DataFrame with top n highest unemployment rates by county.
+        """
+        if self.df is None:
+            self.calculate_metrics()
+
+        return self.top_n(
+            "unemployment_rate",
             n
         )
 
