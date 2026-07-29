@@ -508,11 +508,13 @@ class CountyAnalytics:
 
         boundaries = boundary_loader.load_texas_counties()
 
-        return self.df.merge(
+        self.df = self.df.merge(
             boundaries,
             on="GEOID",
             how="left"
         )
+
+        return self.df
 
 
     def top_n(
