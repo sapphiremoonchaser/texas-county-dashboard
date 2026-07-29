@@ -60,20 +60,6 @@ class CountyAnalytics:
         self.df = None
 
 
-    def run(self) -> pd.DataFrame:
-        """
-        Execute the full analytics pipeline.
-
-        Returns:
-            DataFrame containing county metrics
-        """
-
-        self.load_data()
-        self.calculate_metrics()
-
-        return self.df
-
-
     def _validate_dataframe(self) -> None:
         """
         Validate required columns exist before calculation.
