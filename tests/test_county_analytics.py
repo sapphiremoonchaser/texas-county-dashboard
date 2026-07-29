@@ -241,3 +241,14 @@ def test_calculate_percentage():
     assert analytics.df["result"].iloc[0] == 50
 
 
+def test_boundary_merge():
+    analytics = CountyAnalytics(
+        FakeCensusClient()
+    )
+
+    analytics.load_data()
+
+    assert "geometry" in analytics.df.columns
+    assert len(analytics.df) == 1
+    assert analytics.df["geometry"].notna().all()
+
