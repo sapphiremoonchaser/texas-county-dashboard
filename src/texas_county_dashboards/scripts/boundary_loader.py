@@ -16,7 +16,7 @@ class BoundaryLoader:
         counties = gpd.read_file(self.boundary_path)
 
         texas = counties[
-            counties["STATEFP"] == 'Texas'
+            counties["STATEFP"] == '48'
         ].copy
 
         return texas[
