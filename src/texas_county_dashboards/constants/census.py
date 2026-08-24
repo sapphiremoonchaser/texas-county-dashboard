@@ -1,3 +1,4 @@
+"""This constant tells the api to return county level data from state 48 (Texas)."""
 # ACS_COUNTY_PROFILE = {
 #     "population": "B01003_001E",
 #     "median_income": "B19013_001E",
