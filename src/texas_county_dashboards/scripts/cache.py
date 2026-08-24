@@ -1,3 +1,6 @@
+"""
+Cache data to avoid repeatedly hitting the api.
+"""
 from pathlib import Path
 import pandas as pd
 
