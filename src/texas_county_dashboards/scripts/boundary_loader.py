@@ -1,3 +1,4 @@
+"""Load geometric county boundaries."""
 from pathlib import Path
 
 import geopandas as gpd
