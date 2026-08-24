@@ -17,5 +17,11 @@ def build_county_dataset():
 
     county_df = analytics.calculate_metrics()
 
-    cache = Cache()
+    cache = DataCache()
 
+    cache.save(county_df)
+
+    return county_df
+
+if __name__ == "__main__":
+    build_county_dataset()

@@ -11,6 +11,7 @@ import pandas as pd
 
 from texas_county_dashboards.scripts.census_client import CensusClient
 from texas_county_dashboards.scripts.boundary_loader import BoundaryLoader
+from texas_county_dashboards.cache import DataCache
 
 MERGE_KEYS = [
     "state",
@@ -55,6 +56,9 @@ class CountyAnalytics:
         self.economics_profile = None
         self.housing_profile = None
         self.df = None
+
+        # Check for cached data
+        self.cache = DataCache()
 
 
     def _validate_dataframe(self) -> None:
@@ -472,7 +476,18 @@ class CountyAnalytics:
 
         Returns:
             DataFrame containing merged county Census data.
+    def load_data(
+        self,
+        refresh=False
+    ) -> pd.DataFrame:
         """
+        Load county_profile, education_profile, and employment_profile.
+        :return: one dataframe with merged data. Check to see if data is
+        cached first.
+        """
+        if self.cache.exists() and not refresh:
+            self.df = self.cache.load()
+            return self.df
 
         # Load census profiles
         self.county_profile = self.census_client.county_profile()
@@ -496,6 +511,7 @@ class CountyAnalytics:
             on="GEOID",
             how="left"
         )
+        self.cache.save(self.df)
 
         return self.df
 
@@ -624,6 +640,7 @@ class CountyAnalytics:
             self.calculate_metrics()
 
         return self.top_n(
+            "median_income_counties",
             "median_household_income",
             n=n
         )
