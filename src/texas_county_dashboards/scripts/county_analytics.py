@@ -8,9 +8,6 @@ ranking and analyzing counties.
 from pathlib import Path
 
 import pandas as pd
-from jinja2.utils import missing
-from pandas import set_eng_float_format
-from pandas.core.interchange.from_dataframe import primitive_column_to_ndarray
 
 from texas_county_dashboards.scripts.census_client import CensusClient
 from texas_county_dashboards.scripts.boundary_loader import BoundaryLoader

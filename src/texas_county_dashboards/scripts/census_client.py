@@ -6,12 +6,12 @@ import pandas as pd
 
 from texas_county_dashboards.constants.census import TEXAS_COUNTIES
 
-from texas_county_dashboards.variables.county import COUNTY_PROFILE
-from texas_county_dashboards.variables.education import EDUCATION_PROFILE
-from texas_county_dashboards.variables.employment import EMPLOYMENT_PROFILE
-from texas_county_dashboards.variables.demographics import DEMOGRAPHICS_PROFILE
-from texas_county_dashboards.variables.economics import ECONOMICS_PROFILE
-from texas_county_dashboards.variables.housing import HOUSING_PROFILE
+from texas_county_dashboards.constants.county import COUNTY_PROFILE
+from texas_county_dashboards.constants.education import EDUCATION_PROFILE
+from texas_county_dashboards.constants.employment import EMPLOYMENT_PROFILE
+from texas_county_dashboards.constants.demographics import DEMOGRAPHICS_PROFILE
+from texas_county_dashboards.constants.economics import ECONOMICS_PROFILE
+from texas_county_dashboards.constants.housing import HOUSING_PROFILE
 
 
 class CensusClient:

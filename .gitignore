@@ -91,3 +91,5 @@ desktop.ini
 # Census downloads
 *.zip
 *.geojson
+/src/texas_county_dashboards/data/
+/src/texas_county_dashboards/data/
