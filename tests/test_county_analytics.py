@@ -128,16 +128,17 @@ def test_load_data_merges_profiles():
     :return:
     """
     analytics = CountyAnalytics(
-        FakeCensusClient()
+        FakeCensusClient(),
+        use_cache=False
     )
 
     df = analytics.load_data()
 
     assert len(df) == 1
 
-    assert "population" in df.columns
-    assert "bachelors" in df.columns
-    assert "unemployed" in df.columns
+    assert df.loc[0, "population"] == 1000
+    assert df.loc[0, "bachelors"] == 100
+    assert df.loc[0, "unemployed"] == 50
 
 
 def test_calculate_percentage_handles_zero():
@@ -193,7 +194,8 @@ def test_calculated_metrics():
     """
 
     analytics = CountyAnalytics(
-        FakeCensusClient()
+        FakeCensusClient(),
+        use_cache=False
     )
 
     df = analytics.calculate_metrics()
@@ -205,7 +207,8 @@ def test_calculated_metrics():
 
 def test_calculated_demographics_metrics():
     analytics = CountyAnalytics(
-        FakeCensusClient()
+        FakeCensusClient(),
+        use_cache=False
     )
 
     df = analytics.calculate_metrics()
@@ -224,7 +227,8 @@ def test_calculated_demographics_metrics():
 def test_calculated_economic_metrics():
 
     analytics = CountyAnalytics(
-        FakeCensusClient
+        FakeCensusClient(),
+        use_cache=False
     )
 
     df = analytics.calculate_metrics()
@@ -235,7 +239,8 @@ def test_calculated_economic_metrics():
 
 def test_calculated_education_metrics():
     analytics = CountyAnalytics(
-        FakeCensusClient()
+        FakeCensusClient(),
+        use_cache=False
     )
 
     df = analytics.calculate_metrics()
@@ -247,7 +252,8 @@ def test_calculated_education_metrics():
 
 def test_calculated_employment_metrics():
     analytics = CountyAnalytics(
-        FakeCensusClient
+        FakeCensusClient(),
+        use_cache=False
     )
 
     df = analytics.calculate_metrics()
@@ -257,7 +263,8 @@ def test_calculated_employment_metrics():
 
 def test_calculated_housing_metrics():
     analytics = CountyAnalytics(
-        FakeCensusClient()
+        FakeCensusClient(),
+        use_cache=False
     )
 
     df = analytics.calculate_metrics()
@@ -271,7 +278,8 @@ def test_calculated_housing_metrics():
 def test_highest_income_counties():
 
     analytics = CountyAnalytics(
-        FakeCensusClient()
+        FakeCensusClient(),
+        use_cache=False
     )
 
     analytics.df = pd.DataFrame({

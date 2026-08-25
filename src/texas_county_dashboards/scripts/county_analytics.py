@@ -11,7 +11,7 @@ import pandas as pd
 
 from texas_county_dashboards.scripts.census_client import CensusClient
 from texas_county_dashboards.scripts.boundary_loader import BoundaryLoader
-from texas_county_dashboards.cache import DataCache
+from texas_county_dashboards.scripts.cache import DataCache
 
 MERGE_KEYS = [
     "state",
@@ -43,7 +43,8 @@ class CountyAnalytics:
     """
     def __init__(
         self,
-        census_client: CensusClient
+        census_client: CensusClient,
+        use_cache=True
     ):
         # Store the variable so data can be retrieved lazily
         # when analytics are requested
@@ -58,7 +59,7 @@ class CountyAnalytics:
         self.df = None
 
         # Check for cached data
-        self.cache = DataCache()
+        self.cache = DataCache() if use_cache else None
 
 
     def _validate_dataframe(self) -> None:
@@ -467,15 +468,6 @@ class CountyAnalytics:
         return self.df
 
 
-    def load_data(self) -> pd.DataFrame:
-        """
-        Retrieve Census datasets and merge them into one dataframe.
-
-        The loaded datasets include demographic, economic,
-        education, employment, housing, and county profile data.
-
-        Returns:
-            DataFrame containing merged county Census data.
     def load_data(
         self,
         refresh=False
@@ -485,7 +477,7 @@ class CountyAnalytics:
         :return: one dataframe with merged data. Check to see if data is
         cached first.
         """
-        if self.cache.exists() and not refresh:
+        if self.cache and self.cache.exists() and not refresh:
             self.df = self.cache.load()
             return self.df
 
@@ -511,7 +503,9 @@ class CountyAnalytics:
             on="GEOID",
             how="left"
         )
-        self.cache.save(self.df)
+
+        if self.cache:
+            self.cache.save(self.df)
 
         return self.df
 
@@ -523,213 +517,17 @@ class CountyAnalytics:
         ascending: bool = False
     ) -> pd.DataFrame:
         """
-        Return the top n counties based on the metric passed in.
-
-        Args:
-            metric: Metric to be compared.
-            n: Top n counties.
-            ascending: ascending behavior, True or False
-        Returns:
-            DataFrame sorted by metric
-        """
-        return (
-            self.df
-            .sort_values(
-                metric,
-                ascending=ascending
-            )
-            .head(n)
-        )
-
-
-    def save_data(
-        self,
-        path: str
-    ) -> None:
-        """
-        Save processed analytics to a parquet file.
-
-        Args:
-            path: File location where the dataframe will be saved.
-
-        Returns:
-            None. Saves the dataframe as a parquet file.
-        """
-        self.df.to_parquet(path, index=False)
-
-
-    def calculate_metrics(self) -> pd.DataFrame:
-        """
-        Calculate all derived county analytics metrics.
-
-        Loads Census data if it has not already been loaded,
-        the calculates metrics for demographics, economics,
-        education, employment, and housing.
-
-        Returns:
-            DataFrame containing raw Census data and calculated metrics.
-        """
-
-        # Make sure the data is loaded
-        if self.df is None:
-            self.load_data()
-
-        self._validate_dataframe()
-
-        self._calculate_demographics()
-        self._calculate_economics()
-        self._calculate_education()
-        self._calculate_employment()
-        self._calculate_housing()
-
-        self._calculate_rank(
-            "median_household_income",
-            "median_income_rank",
-            ascending=True
-        )
-
-        self._calculate_rank(
-            "population",
-            "population_rank",
-            ascending=True
-        )
-
-        self._calculate_rank(
-            "median_household_income",
-            "income_percentile",
-            ascending=True
-        )
-
-        self._round_metrics()
-
-        return self.df
-
-
-    def get_county(
-        self,
-        county_name: str
-    ) -> pd.DataFrame:
-        """
-        Returns metrics for a single county.
-
-        Args:
-            county_name: name of the county being returned
-
-        Returns:
-            DataFrame containing metrics for a single county
-        """
-
-        return self.df[
-            self.df["NAME"] == county_name
-        ]
-
-
-    def highest_income_counties(
-        self,
-        n=10
-    ) -> pd.DataFrame:
-        """
         Sort counties by highest income.
 
         Args:
-            n: top n counties
+            metric (str): metric to sort by
+            n (int): top n counties
         Returns:
             DataFrame with the top n counties by highest income.
         """
         if self.df is None:
-            self.calculate_metrics()
+            self.calcualte_metrics()
 
         return self.top_n(
-            "median_income_counties",
-            "median_household_income",
-            n=n
+            "median_"
         )
-
-
-    def largest_counties(
-        self,
-        n=10
-    ) -> pd.DataFrame:
-        """
-        Sort counties by largest population.
-
-        Args:
-            n: top n counties
-        Returns:
-            DataFrame with top n largest counties by population
-        """
-        if self.df is None:
-            self.calculate_metrics()
-
-        return self.top_n(
-            "population",
-            n
-        )
-
-
-    def highest_poverty_counties(
-        self,
-        n=10
-    ) -> pd.DataFrame:
-        """
-        Sort counties based on highest poverty rate.
-
-        Args:
-            n: top n counties
-
-        Returns:
-            DataFrame with top n highest poverty rates by county.
-        """
-        if self.df is None:
-            self.calculate_metrics()
-
-        return self.top_n(
-            "povery_rate",
-            n
-        )
-
-
-    def highest_education_counties(
-        self,
-        n=10
-    ):
-        """
-        Sort counties based on highest education rate.
-
-        Args:
-            n: top n counties
-
-        Returns:
-            DataFrame with top n highest education rates by county.
-        """
-        if self.df is None:
-            self.calculate_metrics()
-
-        return self.top_n(
-            "percent_bachelors_plus",
-            n
-        )
-
-
-    def highest_unemployment_counties(
-        self,
-        n=10
-    ):
-        """
-        Sort counties based on highest unemployment rate.
-
-        Args:
-            n: top n counties
-
-        Returns:
-            DataFrame with top n highest unemployment rates by county.
-        """
-        if self.df is None:
-            self.calculate_metrics()
-
-        return self.top_n(
-            "unemployment_rate",
-            n
-        )
-
-

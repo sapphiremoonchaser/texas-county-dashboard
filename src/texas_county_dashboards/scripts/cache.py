@@ -1,30 +1,41 @@
 """
-Cache data to avoid repeatedly hitting the api.
+This is a class to store data in for caching.
 """
 from pathlib import Path
 import pandas as pd
 
+PROCESSED_DATA = Path("data/processed")
+
 
 class DataCache:
+    """
+    Save and load processed data.
+    """
 
     def __init__(
         self,
-        filename="data/processed/county_metrics.parquet"
+        filename="county_metrics.parquet"
     ):
-        self.filename = Path(filename)
+        self.path = PROCESSED_DATA / filename
 
-
-    def save(
-        self,
-        df: pd.DataFrame
-    ):
-        self.filename.parent.mkdir(
+        PROCESSED_DATA.mkdir(
             parents=True,
             exist_ok=True
         )
 
-        df.to_parquet(self.filename)
-
+    def save(
+        self,
+        df
+    ):
+        df.to_parquet(self.path)
 
     def load(self):
-        return pd.read_parquet(self.filename)
+        if not self.path.exists():
+            return None
+
+        return pd.read_parquet(self.path)
+
+    def exists(self):
+        return self.path.exists()
+
+
