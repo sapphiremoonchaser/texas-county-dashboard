@@ -517,7 +517,7 @@ class CountyAnalytics:
         ascending: bool = False
     ) -> pd.DataFrame:
         """
-        Sort counties by highest income.
+        Sort counties by a metric.
 
         Args:
             metric (str): metric to sort by
@@ -526,7 +526,7 @@ class CountyAnalytics:
             DataFrame with the top n counties by highest income.
         """
         if self.df is None:
-            self.calcualte_metrics()
+            self.calculate_metrics()
 
         return self.top_n(
             "median_"
