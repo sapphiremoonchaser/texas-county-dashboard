@@ -1,5 +1,5 @@
 """
-Downloads data from the Census API
+Provides a client for retrieving data from the U.S. Census API.
 """
 import requests
 import pandas as pd
@@ -15,7 +15,10 @@ from texas_county_dashboards.constants.housing import HOUSING_PROFILE
 
 
 class CensusClient:
-    """Download Census API data"""
+    """
+    Download Census API data including education, demographics, employment,
+    economics, and housing.
+    """
 
     BASE_URL = "https://api.census.gov/data"
 
