@@ -3,6 +3,7 @@ This is a class to store data in for caching.
 """
 from pathlib import Path
 import pandas as pd
+import geopandas as gpd
 
 PROCESSED_DATA = Path("data/processed")
 
@@ -26,7 +27,7 @@ class DataCache:
     def save(
         self,
         df
-    ):
+    ) -> None:
         df.to_parquet(self.path)
 
     def load(self):

@@ -67,10 +67,6 @@ class CensusClient:
             timeout=30
         )
 
-        print("STATUS:", response.status_code)
-        print("URL:", response.url)
-        print("RESPONSE:", response.text[:500])
-
         # Raise an exception if 404, 500, or 403 error returned
         response.raise_for_status()
 
@@ -246,4 +242,5 @@ class CensusClient:
         """
 
         return self._profile(HOUSING_PROFILE)
+
 

@@ -251,4 +251,3 @@ def test_get_raises_http_error(mock_get):
             variables=["NAME"],
             geography={"for": "county:*"},
         )
-

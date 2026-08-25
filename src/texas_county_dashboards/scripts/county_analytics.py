@@ -519,13 +519,17 @@ class CountyAnalytics:
 
         boundaries = self.boundary_loader.load_counties()
 
-        self.df = self.df.merge(
-            boundaries,
+        self.df = boundaries.merge(
+            self.df,
             on="GEOID",
             how="left"
         )
 
         if self.cache:
+            print("DF TYPE:", type(self.df))
+            print("GEOMETRY TYPE:", self.df.geometry.dtype)
+            print("FIRST GEOMETRY:", type(self.df.geometry.iloc[0]))
+
             self.cache.save(self.df)
 
         return self.df

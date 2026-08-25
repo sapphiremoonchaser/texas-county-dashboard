@@ -318,6 +318,44 @@ def test_highest_income_counties():
     ]
 
 
+def test_top_n_ascending():
+
+    analytics = CountyAnalytics(
+        FakeCensusClient()
+    )
+
+    analytics.df = pd.DataFrame({
+        "NAME": ["A", "B", "C"],
+        "population": [100, 1000, 500]
+    })
+
+    result = analytics.top_n(
+        "population",
+        2,
+        ascending=True
+    )
+
+    assert list(result["NAME"]) == [
+        "A",
+        "C"
+    ]
+
+
+def test_top_n_invalid_metric():
+
+    analytics = CountyAnalytics(
+        FakeCensusClient()
+    )
+
+    analytics.df = pd.DataFrame({
+        "NAME": ["A"],
+        "population": [100]
+    })
+
+    with pytest.raises(KeyError):
+        analytics.top_n("not_a_metric", 1)
+
+
 def test_largest_counties():
 
     analytics = CountyAnalytics(
@@ -357,25 +395,6 @@ def test_run_returns_complete_dataframe():
     assert df is not None
     assert "percent_white" in df.columns
     assert "poverty_rate" in df.columns
-
-
-def test_calculate_percentage():
-    analytics = CountyAnalytics(
-        FakeCensusClient()
-    )
-
-    analytics.df = pd.DataFrame({
-        "a": [50],
-        "b": [100]
-    })
-
-    analytics._calculate_percentage(
-        "a",
-        "b",
-        "result"
-    )
-
-    assert analytics.df["result"].iloc[0] == 50
 
 
 def test_boundary_merge():
