@@ -198,6 +198,8 @@ def test_calculated_metrics():
         use_cache=False
     )
 
+    analytics.load_data()
+
     df = analytics.calculate_metrics()
 
     assert "percent_female" in df.columns
@@ -210,6 +212,8 @@ def test_calculated_demographics_metrics():
         FakeCensusClient(),
         use_cache=False
     )
+
+    analytics.load_data()
 
     df = analytics.calculate_metrics()
 
@@ -231,6 +235,8 @@ def test_calculated_economic_metrics():
         use_cache=False
     )
 
+    analytics.load_data()
+
     df = analytics.calculate_metrics()
 
     assert df["poverty_rate"].iloc[0] == 10
@@ -242,6 +248,8 @@ def test_calculated_education_metrics():
         FakeCensusClient(),
         use_cache=False
     )
+
+    analytics.load_data()
 
     df = analytics.calculate_metrics()
 
@@ -256,6 +264,8 @@ def test_calculated_employment_metrics():
         use_cache=False
     )
 
+    analytics.load_data()
+
     df = analytics.calculate_metrics()
 
     assert df["unemployment_rate"].iloc[0] == 10
@@ -266,6 +276,8 @@ def test_calculated_housing_metrics():
         FakeCensusClient(),
         use_cache=False
     )
+
+    analytics.load_data()
 
     df = analytics.calculate_metrics()
 
@@ -295,7 +307,10 @@ def test_highest_income_counties():
         ]
     })
 
-    result = analytics.highest_income_counties(2)
+    result = analytics.top_n(
+        "median_household_income",
+        2
+    )
 
     assert list(result["NAME"]) == [
         "B",

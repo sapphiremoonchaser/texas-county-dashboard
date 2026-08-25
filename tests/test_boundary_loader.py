@@ -16,7 +16,7 @@ test_boundary_file = (
 def test_boundary_loader():
     loader = BoundaryLoader(test_boundary_file)
 
-    gdf = loader.load_texas_counties()
+    gdf = loader.load_counties()
 
     assert len(gdf) == 254
     assert "geometry" in gdf.columns

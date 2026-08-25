@@ -61,6 +61,12 @@ class CountyAnalytics:
         # Check for cached data
         self.cache = DataCache() if use_cache else None
 
+        # Boundary Loader
+        self.census_client = census_client
+        self.boundary_loader = BoundaryLoader(
+            boundary_path=BOUNDARY_FILE
+        )
+
 
     def _validate_dataframe(self) -> None:
         """
@@ -468,6 +474,25 @@ class CountyAnalytics:
         return self.df
 
 
+    def calculate_metrics(self) -> pd.DataFrame:
+        """
+        Calculate all county-level metrics.
+
+        Returns:
+            DataFrame containing the calculated county metrics.
+        """
+        self._validate_dataframe()
+        self._calculate_demographics()
+        self._calculate_economics()
+        self._calculate_education()
+        self._calculate_employment()
+        self._calculate_housing()
+        self._round_metrics()
+        self._organize_columns()
+
+        return self.df
+
+
     def load_data(
         self,
         refresh=False
@@ -492,11 +517,7 @@ class CountyAnalytics:
         # Merge all of the data
         self.df = self._merge_data()
 
-        # Load the county boundaries
-        boundary_loader = BoundaryLoader(
-            boundary_path=BOUNDARY_FILE)
-
-        boundaries = boundary_loader.load_texas_counties()
+        boundaries = self.boundary_loader.load_counties()
 
         self.df = self.df.merge(
             boundaries,
@@ -528,6 +549,11 @@ class CountyAnalytics:
         if self.df is None:
             self.calculate_metrics()
 
-        return self.top_n(
-            "median_"
+        return (
+            self.df
+            .sort_values(
+                by=metric,
+                ascending=ascending
+            )
+            .head(n)
         )
