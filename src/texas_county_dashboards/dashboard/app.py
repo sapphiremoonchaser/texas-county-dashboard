@@ -29,17 +29,30 @@ analytics = CountyAnalytics(census_client)
 
 df = analytics.run()
 
-# # KPI cards
-# col1, col2, col3, col4 = st.columns(4)
-#
-# with col1:
-#     st.metric(
-#         "Total Counties",
-#         len(df)
-#     )
-#
-# with col2:
-#     st.metric(
-#         "Average Median Income",
-#         f"${df['median_household_income'].mean():.1%}"
-#     )
+# KPI cards
+col1, col2, col3, col4 = st.columns(4)
+
+with col1:
+    st.metric(
+        "Total Counties",
+        len(df)
+    )
+
+with col2:
+    st.metric(
+        "Average Median Income",
+        f"${df['median_household_income'].mean():,.0f}"
+    )
+
+with col3:
+    st.metric(
+        "Average Poverty Rate",
+        f"{df['poverty_rate'].mean():,.0f}%"
+    )
+
+with col4:
+    st.metric(
+        "Average Population",
+        f"{df['population'].mean():,.0f}"
+    )
+
