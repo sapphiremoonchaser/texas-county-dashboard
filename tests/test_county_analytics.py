@@ -335,7 +335,10 @@ def test_largest_counties():
         ]
     })
 
-    result = analytics.largest_counties(1)
+    result = analytics.top_n(
+        "population",
+        1
+    )
 
     assert result.iloc[0]["NAME"] == "Large"
 
@@ -343,8 +346,11 @@ def test_largest_counties():
 def test_run_returns_complete_dataframe():
 
     analytics = CountyAnalytics(
-        FakeCensusClient()
+        FakeCensusClient(),
+        use_cache=False
     )
+
+    analytics.load_data()
 
     df = analytics.run()
 
@@ -374,7 +380,8 @@ def test_calculate_percentage():
 
 def test_boundary_merge():
     analytics = CountyAnalytics(
-        FakeCensusClient()
+        FakeCensusClient(),
+        use_cache=False
     )
 
     analytics.load_data()
