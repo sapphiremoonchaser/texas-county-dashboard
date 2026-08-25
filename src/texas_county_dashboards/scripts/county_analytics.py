@@ -289,7 +289,7 @@ class CountyAnalytics:
         )
 
         self._calculate_percentage(
-            "two_or_more_population",
+            "two_or_more_races_population",
             "population",
             "percent_two_or_more"
         )
