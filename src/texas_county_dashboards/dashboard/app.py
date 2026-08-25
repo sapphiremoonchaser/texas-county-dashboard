@@ -29,7 +29,9 @@ analytics = CountyAnalytics(census_client)
 
 df = analytics.run()
 
-# KPI cards
+# -------------------------
+# KPI Cards
+# -------------------------
 col1, col2, col3, col4 = st.columns(4)
 
 with col1:
@@ -56,3 +58,52 @@ with col4:
         f"{df['population'].mean():,.0f}"
     )
 
+# -------------------------
+# County Map
+# -------------------------
+st.subheader("Texas County Map")
+
+map_metric = st.selectbox(
+    "Select metric",
+    [
+        "Median Income",
+        "Poverty Rate",
+        "Population",
+        "Percent White"
+    ]
+)
+
+# Map will go here
+
+
+# -------------------------
+# County-Level Patterns
+# -------------------------
+st.subheader("County-Level Patterns")
+
+col1, col2 = st.columns(2)
+
+with col1:
+    st.write("Median Income by County")
+    # Chart goes here
+
+with col2:
+    st.write("Poverty Rate by County")
+    # Chart goes here
+
+# -------------------------
+# County Highlights
+# -------------------------
+
+st.subheader("County Highlights")
+
+col1, col2, col3 = st.columns(3)
+
+with col1:
+    st.metric("Highest Median Income", "...")
+
+with col2:
+    st.metric("Lowest Poverty Rate", "...")
+
+with col3:
+    st.metric("Largest Population", "...")
