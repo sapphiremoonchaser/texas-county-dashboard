@@ -128,15 +128,22 @@ def create_income_boxplot(
     income_data = county_gdf["median_household_income"].dropna()
 
     fig = px.box(
-        y=income_data,
+        county_gdf,
+        x="median_household_income",
+        points="all",
         title="Distribution of Median Household Income",
         labels={
-            "y": "Median Household Income",
-        }
+            "median_household_income": "Median Household Income"
+        },
+        hover_name="NAME"
     )
 
     fig.update_traces(
-        hovertemplate="$%{y:,.0f}<extra></extra>"
+        hovertemplate=(
+            "%{hovertext}<br>"
+            "$%{x:,.0f}"
+            "<extra></extra>"
+        )
     )
 
     fig.update_layout(
