@@ -1,11 +1,9 @@
 import streamlit as st
-import os
 
-from dotenv import load_dotenv
+from texas_county_dashboards.dashboard.visualizations.preparation import load_county_data
 
-from texas_county_dashboards.scripts.county_analytics import CountyAnalytics
-from texas_county_dashboards.scripts.census_client import CensusClient
 
+df = load_county_data()
 
 st.set_page_config(
     page_title="Texas County Analytics",
@@ -16,18 +14,6 @@ st.title("Texas County Analytics")
 
 st.write("Explore demographic, economic, and population patterns across Texas "
          "counties.")
-
-load_dotenv()
-
-api_key = os.getenv("CENSUS_API_KEY")
-
-census_client = CensusClient(
-    api_key=api_key
-)
-
-analytics = CountyAnalytics(census_client)
-
-df = analytics.run()
 
 # -------------------------
 # KPI Cards
