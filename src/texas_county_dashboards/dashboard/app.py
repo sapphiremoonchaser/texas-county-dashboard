@@ -4,7 +4,9 @@ from pathlib import Path
 from texas_county_dashboards.scripts.boundary_loader import BoundaryLoader
 from texas_county_dashboards.dashboard.visualizations.preparation import load_county_data
 from texas_county_dashboards.dashboard.visualizations.visualizations import (
-    create_county_map
+    create_county_map,
+    create_top_income_chart,
+    create_top_poverty_chart
 )
 
 
@@ -68,11 +70,7 @@ fig = create_county_map(
     county_gdf=county_gdf,
     metric=map_metric
 )
-
-st.plotly_chart(
-    fig,
-    use_container_width=True
-)
+st.plotly_chart(fig, use_container_width=True)
 
 
 # -------------------------
@@ -84,11 +82,15 @@ col1, col2 = st.columns(2)
 
 with col1:
     st.write("Median Income by County")
-    # Chart goes here
+
+    fig = create_top_income_chart(county_gdf)
+    st.plotly_chart(fig, use_container_width=True)
 
 with col2:
     st.write("Poverty Rate by County")
-    # Chart goes here
+
+    fig = create_top_poverty_chart(county_gdf)
+    st.plotly_chart(fig, use_container_width=True)
 
 # -------------------------
 # County Highlights

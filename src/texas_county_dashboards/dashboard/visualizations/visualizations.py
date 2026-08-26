@@ -76,3 +76,32 @@ def create_top_income_chart(
     )
 
     return fig
+
+
+def create_top_poverty_chart(county_gdf):
+    top_poverty = (
+        county_gdf[["county_name", "poverty_rate"]]
+        .dropna()
+        .nlargest(10, "poverty_rate")
+        .sort_values("poverty_rate")
+    )
+
+    fig = px.bar(
+        top_poverty,
+        x="poverty_rate",
+        y="county_name",
+        orientation="h",
+        title="Top 10 Counties by Poverty Rate",
+        labels={
+            "poverty_rate": "Poverty Rate",
+            "county_name": "County"
+        },
+        text="poverty_rate"
+    )
+
+    fig.update_traces(
+        texttemplate="%{text:.1f}%",
+        textposition="outside"
+    )
+
+    return fig
