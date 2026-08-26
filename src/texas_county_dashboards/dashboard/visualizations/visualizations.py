@@ -12,7 +12,7 @@ def create_county_map(
     """Create a choropleth map of Texas counties."""
 
     metric_columns = {
-        "Median Income": "median_income",
+        "Median Income": "median_household_income",
         "Poverty Rate": "poverty_rate",
         "Population": "population",
         "Percent White": "percent_white"
@@ -20,12 +20,15 @@ def create_county_map(
 
     column = metric_columns[metric]
 
+    geojson = county_gdf.__geo_interface__
+
     fig = px.choropleth(
         county_gdf,
-        geojson=county_gdf.geometry,
-        locations=county_gdf.index,
+        geojson=geojson,
+        locations='GEOID',
+        featureidkey='properties.GEOID',
         color=column,
-        hover_name="county_name",
+        hover_name="county",
         color_continuous_scale="Viridis"
     )
 
