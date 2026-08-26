@@ -10,14 +10,14 @@ from texas_county_dashboards.scripts.county_analytics import CountyAnalytics
 def load_county_data():
     load_dotenv()
 
-    api_key = os.getenv("CENSUE_API_KEY")
+    api_key = os.getenv("CENSUS_API_KEY")
 
     census_client = CensusClient(api_key=api_key)
 
     analytics = CountyAnalytics(census_client=census_client)
 
     boundary_path = (
-            Path(__file__).resolve().parent.parent
+            Path(__file__).resolve().parent.parent.parent
             / "data"
             / "raw"
             / "tl_2024_us_county.zip"
@@ -27,8 +27,15 @@ def load_county_data():
 
     boundary_gdf = boundary_loader.load_counties()
 
+    county_data = analytics.run()
+
+    county_data = county_data.drop(
+        columns=["geometry"],
+        errors="ignore"
+    )
+
     county_gdf = boundary_gdf.merge(
-        analytics.run(),
+        county_data,
         on="GEOID",
         how="left"
     )

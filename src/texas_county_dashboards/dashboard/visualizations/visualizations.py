@@ -28,8 +28,8 @@ def create_county_map(
         locations='GEOID',
         featureidkey='properties.GEOID',
         color=column,
-        hover_name="county",
-        color_continuous_scale="Viridis"
+        hover_name="NAME",
+        color_continuous_scale="Inferno"
     )
 
     fig.update_geos(
@@ -43,3 +43,36 @@ def create_county_map(
 
     return fig
 
+
+def create_top_income_chart(
+    county_gdf: gpd.GeoDataFrame
+):
+    top_income = (
+        county_gdf[[
+            "county_name",
+            "median_household_income",
+        ]]
+        .dropna()
+        .nlargest(10, "median_household_income")
+        .sort_values("median_household_income")
+    )
+
+    fig = px.bar(
+        top_income,
+        x="median_household_income",
+        y="NAME",
+        orientation="h",
+        title="Top 10 Counties by Median Income",
+        labels={
+            "median_household_income": "Median Household Income",
+            "NAME": "County"
+        },
+        text="median_household_income"
+    )
+
+    fig.update_traces(
+        texttemplate="$%{text:,.0f}",
+        textposition="outside"
+    )
+
+    return fig

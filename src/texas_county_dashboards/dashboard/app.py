@@ -8,27 +8,7 @@ from texas_county_dashboards.dashboard.visualizations.visualizations import (
 )
 
 
-df = load_county_data()
-
-boundary_path = (
-    Path(__file__).resolve().parent.parent
-    / "data"
-    / "raw"
-    / "tl_2024_us_county.zip"
-)
-
-boundary_loader = BoundaryLoader(boundary_path)
-
-boundary_gdf = boundary_loader.load_counties()
-
-county_gdf = boundary_gdf.merge(
-    df,
-    on="GEOID",
-    how="left"
-)
-
-st.write(type(boundary_gdf))
-st.write(type(county_gdf))
+county_gdf = load_county_data()
 
 st.set_page_config(
     page_title="Texas County Analytics",
@@ -48,25 +28,25 @@ col1, col2, col3, col4 = st.columns(4)
 with col1:
     st.metric(
         "Total Counties",
-        len(df)
+        len(county_gdf)
     )
 
 with col2:
     st.metric(
         "Average Median Income",
-        f"${df['median_household_income'].mean():,.0f}"
+        f"${county_gdf['median_household_income'].mean():,.0f}"
     )
 
 with col3:
     st.metric(
         "Average Poverty Rate",
-        f"{df['poverty_rate'].mean():,.0f}%"
+        f"{county_gdf['poverty_rate'].mean():,.0f}%"
     )
 
 with col4:
     st.metric(
         "Average Population",
-        f"{df['population'].mean():,.0f}"
+        f"{county_gdf['population'].mean():,.0f}"
     )
 
 # -------------------------
@@ -85,7 +65,7 @@ map_metric = st.selectbox(
 )
 
 fig = create_county_map(
-    county_gdf=df,
+    county_gdf=county_gdf,
     metric=map_metric
 )
 
