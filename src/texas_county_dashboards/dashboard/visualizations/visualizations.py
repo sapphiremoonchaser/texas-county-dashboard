@@ -46,16 +46,18 @@ def create_county_map(
 
 def create_top_income_chart(
     county_gdf: gpd.GeoDataFrame
-):
+) -> Figure:
     top_income = (
         county_gdf[[
-            "county_name",
+            "NAME",
             "median_household_income",
         ]]
         .dropna()
         .nlargest(10, "median_household_income")
         .sort_values("median_household_income")
     )
+
+    max_income = top_income["median_household_income"].max()
 
     fig = px.bar(
         top_income,
@@ -75,26 +77,34 @@ def create_top_income_chart(
         textposition="outside"
     )
 
+    fig.update_xaxes(
+        range=[0, max_income * 1.15]
+    )
+
     return fig
 
 
-def create_top_poverty_chart(county_gdf):
+def create_top_poverty_chart(
+    county_gdf
+) -> Figure:
     top_poverty = (
-        county_gdf[["county_name", "poverty_rate"]]
+        county_gdf[["NAME", "poverty_rate"]]
         .dropna()
         .nlargest(10, "poverty_rate")
         .sort_values("poverty_rate")
     )
 
+    max_poverty = top_poverty["poverty_rate"].max()
+
     fig = px.bar(
         top_poverty,
         x="poverty_rate",
-        y="county_name",
+        y="NAME",
         orientation="h",
         title="Top 10 Counties by Poverty Rate",
         labels={
             "poverty_rate": "Poverty Rate",
-            "county_name": "County"
+            "NAME": "County"
         },
         text="poverty_rate"
     )
@@ -102,6 +112,10 @@ def create_top_poverty_chart(county_gdf):
     fig.update_traces(
         texttemplate="%{text:.1f}%",
         textposition="outside"
+    )
+
+    fig.update_xaxes(
+        range=[0, max_poverty * 1.15]
     )
 
     return fig
