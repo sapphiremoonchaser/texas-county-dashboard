@@ -126,7 +126,39 @@ if page == "Overview":
 
 
 if page == "County Explorer":
-    pass
+    st.subheader("County Explorer")
+
+    # Create county selector
+    county_name = st.selectbox(
+        "Select a County",
+        options=sorted(county_gdf["NAME"].dropna().unique())
+    )
+
+    selected_county = county_gdf[
+        county_gdf["NAME"] == county_name
+    ].iloc[0]
+
+    # KPI Cards
+    col1, col2, col3 = st.columns(3)
+
+    with col1:
+        st.metric(
+            "Population",
+            f"{selected_county['population']:,.0f}"
+        )
+
+    with col2:
+        st.metric(
+            "Average Median Income",
+            f"${selected_county['median_household_income'].mean():,.0f}"
+        )
+
+    with col3:
+        st.metric(
+            "Average Poverty Rate",
+            f"{selected_county['poverty_rate'].mean():,.0f}%"
+        )
+
 
 
 if page == "County Comparison":
