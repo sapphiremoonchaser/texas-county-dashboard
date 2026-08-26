@@ -94,7 +94,6 @@ with col2:
 # -------------------------
 # County Highlights
 # -------------------------
-
 st.subheader("County Highlights")
 
 col1, col2, col3 = st.columns(3)
