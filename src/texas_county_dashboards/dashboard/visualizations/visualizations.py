@@ -119,3 +119,29 @@ def create_top_poverty_chart(
     )
 
     return fig
+
+
+def create_income_boxplot(
+    county_gdf: gpd.GeoDataFrame
+) -> Figure:
+    """Create a boxplot showing the distribution of median household income."""
+    income_data = county_gdf["median_household_income"].dropna()
+
+    fig = px.box(
+        y=income_data,
+        title="Distribution of Median Household Income",
+        labels={
+            "y": "Median Household Income",
+        }
+    )
+
+    fig.update_traces(
+        hovertemplate="$%{y:,.0f}<extra></extra>"
+    )
+
+    fig.update_layout(
+        yaxis_tickprefix="$",
+        yaxis_tickformat=","
+    )
+
+    return fig
