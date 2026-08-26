@@ -1,21 +1,24 @@
 """
-Downloads data from the Census API
+Provides a client for retrieving data from the U.S. Census API.
 """
 import requests
 import pandas as pd
 
 from texas_county_dashboards.constants.census import TEXAS_COUNTIES
 
-from texas_county_dashboards.variables.county import COUNTY_PROFILE
-from texas_county_dashboards.variables.education import EDUCATION_PROFILE
-from texas_county_dashboards.variables.employment import EMPLOYMENT_PROFILE
-from texas_county_dashboards.variables.demographics import DEMOGRAPHICS_PROFILE
-from texas_county_dashboards.variables.economics import ECONOMICS_PROFILE
-from texas_county_dashboards.variables.housing import HOUSING_PROFILE
+from texas_county_dashboards.constants.county import COUNTY_PROFILE
+from texas_county_dashboards.constants.education import EDUCATION_PROFILE
+from texas_county_dashboards.constants.employment import EMPLOYMENT_PROFILE
+from texas_county_dashboards.constants.demographics import DEMOGRAPHICS_PROFILE
+from texas_county_dashboards.constants.economics import ECONOMICS_PROFILE
+from texas_county_dashboards.constants.housing import HOUSING_PROFILE
 
 
 class CensusClient:
-    """Download Census API data"""
+    """
+    Download Census API data including education, demographics, employment,
+    economics, and housing.
+    """
 
     BASE_URL = "https://api.census.gov/data"
 
@@ -63,10 +66,6 @@ class CensusClient:
             params=params,
             timeout=30
         )
-
-        print("STATUS:", response.status_code)
-        print("URL:", response.url)
-        print("RESPONSE:", response.text[:500])
 
         # Raise an exception if 404, 500, or 403 error returned
         response.raise_for_status()
@@ -243,4 +242,5 @@ class CensusClient:
         """
 
         return self._profile(HOUSING_PROFILE)
+
 

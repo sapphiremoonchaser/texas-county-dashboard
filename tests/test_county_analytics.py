@@ -128,16 +128,17 @@ def test_load_data_merges_profiles():
     :return:
     """
     analytics = CountyAnalytics(
-        FakeCensusClient()
+        FakeCensusClient(),
+        use_cache=False
     )
 
     df = analytics.load_data()
 
     assert len(df) == 1
 
-    assert "population" in df.columns
-    assert "bachelors" in df.columns
-    assert "unemployed" in df.columns
+    assert df.loc[0, "population"] == 1000
+    assert df.loc[0, "bachelors"] == 100
+    assert df.loc[0, "unemployed"] == 50
 
 
 def test_calculate_percentage_handles_zero():
@@ -193,8 +194,11 @@ def test_calculated_metrics():
     """
 
     analytics = CountyAnalytics(
-        FakeCensusClient()
+        FakeCensusClient(),
+        use_cache=False
     )
+
+    analytics.load_data()
 
     df = analytics.calculate_metrics()
 
@@ -205,8 +209,11 @@ def test_calculated_metrics():
 
 def test_calculated_demographics_metrics():
     analytics = CountyAnalytics(
-        FakeCensusClient()
+        FakeCensusClient(),
+        use_cache=False
     )
+
+    analytics.load_data()
 
     df = analytics.calculate_metrics()
 
@@ -224,8 +231,11 @@ def test_calculated_demographics_metrics():
 def test_calculated_economic_metrics():
 
     analytics = CountyAnalytics(
-        FakeCensusClient
+        FakeCensusClient(),
+        use_cache=False
     )
+
+    analytics.load_data()
 
     df = analytics.calculate_metrics()
 
@@ -235,8 +245,11 @@ def test_calculated_economic_metrics():
 
 def test_calculated_education_metrics():
     analytics = CountyAnalytics(
-        FakeCensusClient()
+        FakeCensusClient(),
+        use_cache=False
     )
+
+    analytics.load_data()
 
     df = analytics.calculate_metrics()
 
@@ -247,8 +260,11 @@ def test_calculated_education_metrics():
 
 def test_calculated_employment_metrics():
     analytics = CountyAnalytics(
-        FakeCensusClient
+        FakeCensusClient(),
+        use_cache=False
     )
+
+    analytics.load_data()
 
     df = analytics.calculate_metrics()
 
@@ -257,8 +273,11 @@ def test_calculated_employment_metrics():
 
 def test_calculated_housing_metrics():
     analytics = CountyAnalytics(
-        FakeCensusClient()
+        FakeCensusClient(),
+        use_cache=False
     )
+
+    analytics.load_data()
 
     df = analytics.calculate_metrics()
 
@@ -271,7 +290,8 @@ def test_calculated_housing_metrics():
 def test_highest_income_counties():
 
     analytics = CountyAnalytics(
-        FakeCensusClient()
+        FakeCensusClient(),
+        use_cache=False
     )
 
     analytics.df = pd.DataFrame({
@@ -287,12 +307,53 @@ def test_highest_income_counties():
         ]
     })
 
-    result = analytics.highest_income_counties(2)
+    result = analytics.top_n(
+        "median_household_income",
+        2
+    )
 
     assert list(result["NAME"]) == [
         "B",
         "A"
     ]
+
+
+def test_top_n_ascending():
+
+    analytics = CountyAnalytics(
+        FakeCensusClient()
+    )
+
+    analytics.df = pd.DataFrame({
+        "NAME": ["A", "B", "C"],
+        "population": [100, 1000, 500]
+    })
+
+    result = analytics.top_n(
+        "population",
+        2,
+        ascending=True
+    )
+
+    assert list(result["NAME"]) == [
+        "A",
+        "C"
+    ]
+
+
+def test_top_n_invalid_metric():
+
+    analytics = CountyAnalytics(
+        FakeCensusClient()
+    )
+
+    analytics.df = pd.DataFrame({
+        "NAME": ["A"],
+        "population": [100]
+    })
+
+    with pytest.raises(KeyError):
+        analytics.top_n("not_a_metric", 1)
 
 
 def test_largest_counties():
@@ -312,7 +373,10 @@ def test_largest_counties():
         ]
     })
 
-    result = analytics.largest_counties(1)
+    result = analytics.top_n(
+        "population",
+        1
+    )
 
     assert result.iloc[0]["NAME"] == "Large"
 
@@ -320,8 +384,11 @@ def test_largest_counties():
 def test_run_returns_complete_dataframe():
 
     analytics = CountyAnalytics(
-        FakeCensusClient()
+        FakeCensusClient(),
+        use_cache=False
     )
+
+    analytics.load_data()
 
     df = analytics.run()
 
@@ -330,28 +397,10 @@ def test_run_returns_complete_dataframe():
     assert "poverty_rate" in df.columns
 
 
-def test_calculate_percentage():
-    analytics = CountyAnalytics(
-        FakeCensusClient()
-    )
-
-    analytics.df = pd.DataFrame({
-        "a": [50],
-        "b": [100]
-    })
-
-    analytics._calculate_percentage(
-        "a",
-        "b",
-        "result"
-    )
-
-    assert analytics.df["result"].iloc[0] == 50
-
-
 def test_boundary_merge():
     analytics = CountyAnalytics(
-        FakeCensusClient()
+        FakeCensusClient(),
+        use_cache=False
     )
 
     analytics.load_data()

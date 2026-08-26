@@ -1,10 +1,11 @@
+"""Load geometric county boundaries."""
 from pathlib import Path
 
 import geopandas as gpd
 
 
 class BoundaryLoader:
-
+    """Load and filter Texas county boundary data."""
     def __init__(
         self,
         boundary_path: Path
@@ -12,7 +13,7 @@ class BoundaryLoader:
        self.boundary_path = boundary_path
 
 
-    def load_texas_counties(self) -> gpd.GeoDataFrame:
+    def load_counties(self) -> gpd.GeoDataFrame:
         counties = gpd.read_file(self.boundary_path)
 
         texas = counties[
@@ -22,7 +23,6 @@ class BoundaryLoader:
         return texas[
             [
                 "GEOID",
-                "NAME",
                 "geometry"
             ]
         ]

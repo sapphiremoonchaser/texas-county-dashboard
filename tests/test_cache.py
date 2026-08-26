@@ -1,8 +1,7 @@
-import pytest
 import pandas as pd
 from pathlib import Path
 
-from texas_county_dashboards.cache import DataCache
+from texas_county_dashboards.scripts.cache import DataCache
 
 
 def test_cache_saves_and_loads(tmp_path):

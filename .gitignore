@@ -21,6 +21,7 @@ pip-wheel-metadata/
 venv/
 env/
 ENV/
+.env/
 
 # ==========================
 # IDEs
@@ -91,3 +92,5 @@ desktop.ini
 # Census downloads
 *.zip
 *.geojson
+/src/texas_county_dashboards/data/
+/src/texas_county_dashboards/data/

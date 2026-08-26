@@ -4,12 +4,12 @@ from unittest.mock import patch, Mock
 import pandas as pd
 
 from texas_county_dashboards.scripts.census_client import CensusClient
-from texas_county_dashboards.variables.county import COUNTY_PROFILE
-from texas_county_dashboards.variables.education import EDUCATION_PROFILE
-from texas_county_dashboards.variables.housing import HOUSING_PROFILE
-from texas_county_dashboards.variables.employment import EMPLOYMENT_PROFILE
-from texas_county_dashboards.variables.demographics import DEMOGRAPHICS_PROFILE
-from texas_county_dashboards.variables.economics import ECONOMICS_PROFILE
+from texas_county_dashboards.constants.county import COUNTY_PROFILE
+from texas_county_dashboards.constants.education import EDUCATION_PROFILE
+from texas_county_dashboards.constants.housing import HOUSING_PROFILE
+from texas_county_dashboards.constants.employment import EMPLOYMENT_PROFILE
+from texas_county_dashboards.constants.demographics import DEMOGRAPHICS_PROFILE
+from texas_county_dashboards.constants.economics import ECONOMICS_PROFILE
 
 
 def test_init_defaults():
@@ -103,6 +103,8 @@ def test_get_returns_dataframe(mock_get):
         ["Travis County", "1000", "48", "453"]
     ]
 
+    fake_response.text = "fake response"
+
     # Fake successful HTTP request
     fake_response.raise_for_status.return_value = None
 
@@ -133,6 +135,8 @@ def test_get_sends_correct_parameters(mock_get):
     fake.json.return_value = [
         ["NAME"],
     ]
+
+    fake.text = "fake response"
 
     mock_get.return_value = fake
 
@@ -234,6 +238,8 @@ def test_get_raises_http_error(mock_get):
 
     fake = Mock()
 
+    fake.text = "fake response"
+
     fake.raise_for_status.side_effect = HTTPError("404")
 
     mock_get.return_value = fake
@@ -245,4 +251,3 @@ def test_get_raises_http_error(mock_get):
             variables=["NAME"],
             geography={"for": "county:*"},
         )
-
