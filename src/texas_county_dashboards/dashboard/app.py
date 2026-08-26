@@ -159,6 +159,43 @@ if page == "County Explorer":
             f"{selected_county['poverty_rate'].mean():,.0f}%"
         )
 
+    # Percentile Rankings
+    st.subheader("Ranking Against Other Counties")
+
+    population_percentile = (
+        county_gdf["population"] <= selected_county["population"]
+    ).mean() * 100
+
+    income_percentile = (
+        county_gdf['median_household_income'] <= selected_county["median_household_income"]
+    ).mean() * 100
+
+    poverty_rate = selected_county["poverty_rate"]
+
+    poverty_rate_percentile = (
+       county_gdf["poverty_rate"] <= poverty_rate
+    ).mean() * 100
+
+    col1, col2, col3 = st.columns(3)
+
+    with col1:
+        st.metric(
+            "Population Percentile",
+            f"{population_percentile:,.0f}th"
+        )
+
+    with col2:
+        st.metric(
+            "Income Percentile",
+            f"{income_percentile:,.0f}th"
+        )
+
+    with col3:
+        st.metric(
+            "Poverty Rate Percentile",
+            f"{poverty_rate_percentile:.0f}th"
+        )
+
 
 
 if page == "County Comparison":
