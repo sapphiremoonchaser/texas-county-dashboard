@@ -1,5 +1,6 @@
 import streamlit as st
 import pandas as pd
+import geopandas as gpd
 
 from texas_county_dashboards.dashboard.visualizations.preparation import load_county_data
 from texas_county_dashboards.dashboard.visualizations.visualizations import (
@@ -25,7 +26,7 @@ st.set_page_config(
 # Load data
 # --------------------
 
-county_gdf = load_county_data()
+county_gdf: gpd.GeoDataFrame = load_county_data()
 
 st.set_page_config(
     page_title="Texas County Analytics",
