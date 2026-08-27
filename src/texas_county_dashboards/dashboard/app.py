@@ -133,14 +133,14 @@ if page == "County Explorer":
     st.subheader("County Explorer")
 
     # Create county selector
-    county_name = st.selectbox(
+    county_names = st.selectbox(
         "Select a County",
         options=sorted(county_gdf["NAME"].dropna().unique())
     )
 
     selected_county = county_gdf[
-        county_gdf["NAME"] == county_name
-    ].iloc[0]
+        county_gdf["NAME"] == county_names
+        ].iloc[0]
 
     # KPI Cards
     col1, col2, col3, col4 = st.columns(4)
@@ -215,7 +215,7 @@ if page == "County Explorer":
             "Poverty Rate",
             "Unemployment Rate"
         ],
-        county_name: [
+        county_names: [
             f"{selected_county['population']:,.0f}",
             f"${selected_county['median_household_income']:,.0f}",
             f"{selected_county['poverty_rate']:.1f}%",
@@ -287,7 +287,7 @@ if page == "County Explorer":
 
     with col1:
         fig = create_income_comparison(
-            county_name,
+            county_names,
             county_income,
             texas_income
         )
@@ -296,7 +296,7 @@ if page == "County Explorer":
     with col2:
     # Poverty Chart
         fig = create_poverty_comparison(
-            county_name,
+            county_names,
             county_poverty,
             texas_poverty
         )
@@ -306,7 +306,7 @@ if page == "County Explorer":
     with col3:
         # Unemployment Chart
         fig = create_unemployment_comparison(
-            county_name,
+            county_names,
             county_unemployment,
             texas_unemployment
         )
@@ -315,7 +315,30 @@ if page == "County Explorer":
 
 
 if page == "County Comparison":
-    pass
+    st.title("County Comparison")
+
+    # Select Counties
+    county_names = sorted(county_gdf["NAME"].dropna().unique())
+
+    col1, col2 = st.columns(2)
+
+    with col1:
+        county_1 = st.selectbox(
+            "Select County 1",
+            county_names,
+            index=county_names.index("Bastrop County, Texas"),
+            key="comparison_county_1",
+        )
+
+    with col2:
+        county_2 = st.selectbox(
+            "Select County 2",
+            county_names,
+            key="comparison_county_2",
+        )
+
+
+
 
 if page == "Demographics Explorer":
     pass
