@@ -4,9 +4,6 @@ import pandas as pd
 from texas_county_dashboards.dashboard.visualizations.preparation import load_county_data
 from texas_county_dashboards.dashboard.visualizations.visualizations import (
     create_county_map,
-    create_top_income_chart,
-    create_top_poverty_chart,
-    create_income_boxplot,
     create_income_comparison,
     create_poverty_comparison,
     create_unemployment_comparison,
