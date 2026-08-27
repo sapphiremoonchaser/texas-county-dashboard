@@ -323,21 +323,60 @@ if page == "County Comparison":
     col1, col2 = st.columns(2)
 
     with col1:
-        county_1 = st.selectbox(
+        selected_county_1 = st.selectbox(
             "Select County 1",
             county_names,
             index=county_names.index("Bastrop County, Texas"),
             key="comparison_county_1",
         )
 
+        county_1 = county_gdf[
+            county_gdf["NAME"] == selected_county_1
+        ].iloc[0]
+
     with col2:
-        county_2 = st.selectbox(
+        selected_county_2 = st.selectbox(
             "Select County 2",
             county_names,
             key="comparison_county_2",
         )
 
+        county_2 =county_gdf[
+            county_gdf["NAME"] == selected_county_2
+        ].iloc[0]
 
+    comparison_df = pd.DataFrame({
+        "Metric": [
+            "Population",
+            "Median Household Income",
+            "Poverty Rate",
+            "Unemployment Rate",
+        ],
+        selected_county_1: [
+            f"{county_1['population']:,.0f}",
+            f"${county_1['median_household_income']:,.0f}",
+            f"{county_1['poverty_rate']:.1f}%",
+            f"{county_1['unemployment_rate']:.1f}%",
+        ],
+        selected_county_2: [
+            f"{county_2['population']:,.0f}",
+            f"${county_2['median_household_income']:,.0f}",
+            f"{county_2['poverty_rate']:.1f}%",
+            f"{county_2['unemployment_rate']:.1f}%",
+        ],
+        "Difference": [
+            f"{county_1['population'] - county_2['population']:+,.0f}",
+            f"${county_1['median_household_income'] - county_2['median_household_income']:+,.0f}",
+            f"{county_1['poverty_rate'] - county_2['poverty_rate']:+.1f}%",
+            f"{county_1['unemployment_rate'] - county_2['unemployment_rate']:+.1f}%",
+        ],
+    })
+
+    st.dataframe(
+        comparison_df,
+        hide_index=True,
+        use_container_width=True,
+    )
 
 
 if page == "Demographics Explorer":
