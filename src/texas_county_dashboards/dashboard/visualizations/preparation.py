@@ -1,13 +1,21 @@
 from dotenv import load_dotenv
 import os
 from pathlib import Path
+import geopandas as gpd
 
 from texas_county_dashboards.scripts.boundary_loader import BoundaryLoader
 from texas_county_dashboards.scripts.county_analytics import CensusClient
 from texas_county_dashboards.scripts.county_analytics import CountyAnalytics
 
 
-def load_county_data():
+def load_county_data() -> gpd.GeoDataFrame:
+    """
+    Load the county dataset by hitting the api. Also load the boundary data and then
+    merge both datasets into a GeoDataFrame.
+
+    :return:
+        GeoDataFrame containing the county metrics and geography.
+    """
     load_dotenv()
 
     api_key = os.getenv("CENSUS_API_KEY")
