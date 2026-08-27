@@ -16,7 +16,7 @@ from texas_county_dashboards.dashboard.visualizations.visualizations import (
 
 
 st.set_page_config(
-    page_title="Lana Del Rey Lyric Analysis",
+    page_title="Texas County Analysis",
     page_icon="⭐",
     layout="wide"
 )
