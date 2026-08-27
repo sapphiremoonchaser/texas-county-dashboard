@@ -28,11 +28,6 @@ st.set_page_config(
 
 county_gdf: gpd.GeoDataFrame = load_county_data()
 
-st.set_page_config(
-    page_title="Texas County Analytics",
-    layout="wide"
-)
-
 st.title("Texas County Analytics")
 
 st.write("Explore demographic, economic, and population patterns across Texas "
