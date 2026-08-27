@@ -296,3 +296,4 @@ def create_poverty_comparison_chart(comparison_df):
 
     return fig
 
+

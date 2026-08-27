@@ -49,8 +49,7 @@ page = st.sidebar.radio(
     [
         "Overview",
         "County vs. Texas",
-        "County Comparison",
-        "Demographics Explorer"
+        "County Comparison"
     ]
 )
 
@@ -427,6 +426,40 @@ if page == "County Comparison":
             create_poverty_comparison_chart(poverty_comparison)
         )
 
+    # Demographic and population comparison
+    st.subheader("Population and Demographics")
 
-if page == "Demographics Explorer":
-    pass
+    minority_1 = (
+        (county_1["population"] - county_1["white_population"])
+        / county_1["population"]
+    ) * 100
+
+    minority_2 = (
+        (county_2["population"] - county_2["white_population"])
+        / county_2["population"]
+    ) * 100
+
+    demographics_df = pd.DataFrame({
+        "Metric": [
+            "Population",
+            "Median Age",
+            "Minority %",
+        ],
+        selected_county_1: [
+            f"{county_1['population']:,.0f}",
+            f"{county_1['median_age']:.1f}",
+            f"{minority_1:.1f}%",
+        ],
+        selected_county_2: [
+            f"{county_2['population']:,.0f}",
+            f"{county_2['median_age']:.1f}",
+            f"{minority_2:.1f}%",
+        ],
+    })
+
+    st.dataframe(
+        demographics_df,
+        hide_index=True,
+        use_container_width=True,
+    )
+
