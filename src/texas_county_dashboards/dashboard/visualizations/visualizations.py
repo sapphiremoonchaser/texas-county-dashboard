@@ -297,3 +297,81 @@ def create_poverty_comparison_chart(comparison_df):
     return fig
 
 
+def create_metric_ranking_chart(
+    county_gdf: gpd.GeoDataFrame,
+    metric: str,
+    ascending: bool = False,
+) -> Figure:
+    """Create a bar chart ranking counties by the selected metric."""
+
+    metric_columns = {
+        "Median Income": "median_household_income",
+        "Poverty Rate": "poverty_rate",
+        "Population": "population",
+        "Percent White": "percent_white",
+    }
+
+    column = metric_columns[metric]
+
+    plot_df = (
+        county_gdf[["NAME", column]]
+        .dropna()
+        .sort_values(column, ascending=ascending)
+        .head(10)
+    )
+
+    fig = px.bar(
+        plot_df,
+        x=column,
+        y="NAME",
+        orientation="h",
+        title=(
+            f"Bottom 10 Counties by {metric}"
+            if ascending
+            else f"Top 10 Counties by {metric}"
+        ),
+    )
+
+    fig.update_layout(
+        xaxis_title=metric,
+        yaxis_title=None,
+    )
+
+    return fig
+
+
+def create_metric_boxplot(
+    county_gdf: gpd.GeoDataFrame,
+    metric: str,
+) -> Figure:
+    """Create a boxplot showing the distribution of the selected metric."""
+
+    metric_columns = {
+        "Median Income": "median_household_income",
+        "Poverty Rate": "poverty_rate",
+        "Population": "population",
+        "Percent White": "percent_white",
+    }
+
+    column = metric_columns[metric]
+
+    plot_df = county_gdf[["NAME", column]].dropna()
+
+    fig = px.box(
+        plot_df,
+        x=column,
+        points="all",
+        hover_name="NAME",
+        title=f"Distribution of {metric}",
+        labels={
+            column: metric,
+            "NAME": "County",
+        },
+    )
+
+    fig.update_layout(
+        xaxis_title=metric,
+        yaxis_title=None,
+    )
+
+    return fig

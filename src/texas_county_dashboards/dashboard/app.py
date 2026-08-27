@@ -12,7 +12,9 @@ from texas_county_dashboards.dashboard.visualizations.visualizations import (
     create_unemployment_comparison,
     create_population_comparison_chart,
     create_income_comparison_chart,
-    create_poverty_comparison_chart
+    create_poverty_comparison_chart,
+    create_metric_ranking_chart,
+    create_metric_boxplot
 )
 
 
@@ -106,28 +108,35 @@ if page == "Overview":
     )
     st.plotly_chart(fig, use_container_width=True)
 
-
-    # Horizontal Bar Graphs
-    st.subheader("County-Level Patterns")
+    # Ranking counties based on selected metric
+    st.subheader(f"{map_metric} by County")
 
     col1, col2 = st.columns(2)
 
     with col1:
-        st.write("Median Income by County")
+        fig = create_metric_ranking_chart(
+            county_gdf=county_gdf,
+            metric=map_metric,
+        )
 
-        fig = create_top_income_chart(county_gdf)
         st.plotly_chart(fig, use_container_width=True)
 
     with col2:
-        st.write("Poverty Rate by County")
-
-        fig = create_top_poverty_chart(county_gdf)
+        fig = create_metric_ranking_chart(
+            county_gdf=county_gdf,
+            metric=map_metric,
+            ascending=True,
+        )
         st.plotly_chart(fig, use_container_width=True)
 
-    # Median Household Income Distribution
-    st.subheader("Median Houshold Income Distribution")
+    # Metric Distribution
+    st.subheader(f"{map_metric} Distribution")
 
-    fig = create_income_boxplot(county_gdf)
+    fig = create_metric_boxplot(
+        county_gdf=county_gdf,
+        metric=map_metric,
+    )
+
     st.plotly_chart(fig, use_container_width=True)
 
 
