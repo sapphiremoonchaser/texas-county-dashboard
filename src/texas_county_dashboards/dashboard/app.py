@@ -6,7 +6,10 @@ from texas_county_dashboards.dashboard.visualizations.visualizations import (
     create_county_map,
     create_top_income_chart,
     create_top_poverty_chart,
-    create_income_boxplot
+    create_income_boxplot,
+    create_income_comparison,
+    create_poverty_comparison,
+    create_unemployment_comparison
 )
 
 
@@ -177,6 +180,10 @@ if page == "County Explorer":
     texas_poverty = county_gdf["poverty_rate"].median()
     texas_unemployment = county_gdf["unemployment_rate"].median()
 
+    county_income = selected_county["median_household_income"]
+    county_poverty = selected_county["poverty_rate"]
+    county_unemployment = selected_county["unemployment_rate"]
+
     population_rank = (
         county_gdf["population"]
         .rank(method="min", ascending=False)
@@ -272,6 +279,39 @@ if page == "County Explorer":
             ),
             delta_color="inverse"
         )
+
+    # Charts
+    st.subheader("Economic Profile")
+
+    col1, col2, col3 = st.columns(3)
+
+    with col1:
+        fig = create_income_comparison(
+            county_name,
+            county_income,
+            texas_income
+        )
+        st.plotly_chart(fig, use_container_width=True)
+
+    with col2:
+    # Poverty Chart
+        fig = create_poverty_comparison(
+            county_name,
+            county_poverty,
+            texas_poverty
+        )
+
+        st.plotly_chart(fig, use_container_width=True)
+
+    with col3:
+        # Unemployment Chart
+        fig = create_unemployment_comparison(
+            county_name,
+            county_unemployment,
+            texas_unemployment
+        )
+
+        st.plotly_chart(fig, use_container_width=True)
 
 
 if page == "County Comparison":

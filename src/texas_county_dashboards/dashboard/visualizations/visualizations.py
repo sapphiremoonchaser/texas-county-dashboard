@@ -152,3 +152,83 @@ def create_income_boxplot(
     )
 
     return fig
+
+
+def create_income_comparison(
+    county_name: str,
+    county_income: float,
+    texas_income: float
+) -> Figure:
+    """Create a bar chart comparing county income with Texas."""
+
+    fig = px.bar(
+        x=["County", "Texas"],
+        y=[county_income, texas_income],
+        title="Median Household Income",
+        labels={
+            "x": "",
+            "y": "Income"
+        },
+        text=[
+            f"${value:,.0f}"
+            for value in [county_income, texas_income]
+        ]
+    )
+
+    fig.update_yaxes(tickformat="$,.0f")
+
+    return fig
+
+
+def create_poverty_comparison(
+    county_name: str,
+    county_poverty: float,
+    texas_poverty: float
+) -> Figure:
+    """Create a bar chart comparing county poverty with Texas."""
+
+    fig = px.bar(
+        x=["County", "Texas"],
+        y=[county_poverty, texas_poverty],
+        title="Poverty Rate",
+        labels={
+            "x": "",
+            "y": "Poverty Rate"
+        },
+        text=[
+            f"{value:.1f}%"
+            for value in [county_poverty, texas_poverty]
+        ]
+    )
+
+    fig.update_yaxes(ticksuffix="%")
+
+    return fig
+
+
+def create_unemployment_comparison(
+    county_name: str,
+    county_unemployment: float,
+    texas_unemployment: float
+) -> Figure:
+    """Create a bar chart comparing county unemployment with Texas."""
+
+    fig = px.bar(
+        x=["County", "Texas"],
+        y=[county_unemployment, texas_unemployment],
+        title="Unemployment Rate",
+        labels={
+            "x": "",
+            "y": "Unemployment Rate"
+        },
+        text=[
+            f"{value:.1f}%"
+            for value in [county_unemployment, texas_unemployment]
+        ]
+    )
+
+    fig.update_yaxes(ticksuffix="%")
+
+    return fig
+
+
