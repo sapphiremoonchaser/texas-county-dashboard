@@ -2,7 +2,13 @@ import streamlit as st
 import pandas as pd
 import geopandas as gpd
 
-from texas_county_dashboards.dashboard.visualizations.preparation import load_county_data
+from texas_county_dashboards.dashboard.visualizations.preparation import (
+    load_county_data,
+    get_county_names,
+    get_selected_county,
+    create_county_comparison
+)
+
 from texas_county_dashboards.dashboard.visualizations.visualizations import (
     create_county_map,
     create_income_comparison,
@@ -37,7 +43,7 @@ st.write("Explore demographic, economic, and population patterns across Texas "
 # Sidebar
 # --------------------
 
-st.sidebar.title("Texas County Analytics")
+st.sidebar.title("Texas")
 
 page = st.sidebar.radio(
     "Navigate",
@@ -139,12 +145,13 @@ if page == "County vs. Texas":
     # Create county selector
     county_names = st.selectbox(
         "Select a County",
-        options=sorted(county_gdf["NAME"].dropna().unique())
+        options=get_county_names(county_gdf)
     )
 
-    selected_county = county_gdf[
-        county_gdf["NAME"] == county_names
-        ].iloc[0]
+    selected_county = get_selected_county(
+        county_gdf,
+        county_names
+    )
 
     # KPI Cards
     col1, col2, col3, col4 = st.columns(4)
@@ -175,7 +182,7 @@ if page == "County vs. Texas":
 
     # Ranking Table
     unemployment_rate = (
-            selected_county['unemployed'] / selected_county['population']
+        selected_county['unemployed'] / selected_county['population']
     )
 
     # County benchmarks
@@ -184,34 +191,37 @@ if page == "County vs. Texas":
     texas_poverty = county_gdf["poverty_rate"].median()
     texas_unemployment = county_gdf["unemployment_rate"].median()
 
+    # County actual values
     county_income = selected_county["median_household_income"]
     county_poverty = selected_county["poverty_rate"]
     county_unemployment = selected_county["unemployment_rate"]
 
+    # Ranking the counties
     population_rank = (
         county_gdf["population"]
-        .rank(method="min", ascending=False)
+        .rank(method="min", ascending=False) # Largest population gets rank 1
         .loc[selected_county.name]
     )
 
     income_rank = (
         county_gdf["median_household_income"]
-        .rank(method="min", ascending=False)
+        .rank(method="min", ascending=False) # Largest income get rank 1
         .loc[selected_county.name]
     )
 
     poverty_rank = (
         county_gdf["poverty_rate"]
-        .rank(method="min", ascending=False)
+        .rank(method="min", ascending=False) # Largest poverty rate gets rank 1
         .loc[selected_county.name]
     )
 
     unemployment_rank = (
         county_gdf["unemployment_rate"]
-        .rank(method="min", ascending=False)
+        .rank(method="min", ascending=False) # Largest unemployment rate gets rank 1
         .loc[selected_county.name]
     )
 
+    # Fill in the dataframe with the metrics and rankings
     comparison_df = pd.DataFrame({
         "Metric": [
             "Population",
@@ -322,7 +332,7 @@ if page == "County Comparison":
     st.title("County Comparison")
 
     # Select Counties
-    county_names = sorted(county_gdf["NAME"].dropna().unique())
+    county_names = get_county_names(county_gdf)
 
     col1, col2 = st.columns(2)
 
@@ -386,29 +396,29 @@ if page == "County Comparison":
     st.subheader("Economic Profile")
 
     # Data for comparison charts
-    population_comparison = pd.DataFrame({
-        "County": [selected_county_1, selected_county_2],
-        "Population": [
-            county_1["population"],
-            county_2["population"],
-        ],
-    })
+    population_comparison = create_county_comparison(
+        county_1,
+        county_2,
+        selected_county_1,
+        selected_county_2,
+        "population"
+    )
 
-    income_comparison = pd.DataFrame({
-        "County": [selected_county_1, selected_county_2],
-        "Median Household Income": [
-            county_1["median_household_income"],
-            county_2["median_household_income"],
-        ],
-    })
+    income_comparison = create_county_comparison(
+        county_1,
+        county_2,
+        selected_county_1,
+        selected_county_2,
+        "median_household_income"
+    )
 
-    poverty_comparison = pd.DataFrame({
-        "County": [selected_county_1, selected_county_2],
-        "Poverty Rate": [
-            county_1["poverty_rate"],
-            county_2["poverty_rate"],
-        ],
-    })
+    poverty_comparison = create_county_comparison(
+        county_1,
+        county_2,
+        selected_county_1,
+        selected_county_2,
+        "poverty_rate"
+    )
 
     col1, col2, col3 = st.columns(3)
 

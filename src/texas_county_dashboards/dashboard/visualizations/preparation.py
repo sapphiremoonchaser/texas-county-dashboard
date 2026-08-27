@@ -2,6 +2,7 @@ from dotenv import load_dotenv
 import os
 from pathlib import Path
 import geopandas as gpd
+import pandas as pd
 
 from texas_county_dashboards.scripts.boundary_loader import BoundaryLoader
 from texas_county_dashboards.scripts.county_analytics import CensusClient
@@ -49,4 +50,34 @@ def load_county_data() -> gpd.GeoDataFrame:
     )
 
     return county_gdf
+
+
+def get_county_names(county_gdf):
+    """Return sorted county names."""
+    return sorted(county_gdf["NAME"].dropna().unique())
+
+
+def get_selected_county(county_gdf, county_name):
+    """Return the row for the selected county."""
+    return county_gdf[
+        county_gdf["NAME"] == county_name
+    ].iloc[0]
+
+
+def create_county_comparison(
+    county_1,
+    county_2,
+    county_1_name,
+    county_2_name,
+    metric
+) -> pd.DataFrame:
+    """Create a dataframe comparing two counties for a given metric"""
+
+    return pd.DataFrame({
+        "County": [county_1_name, county_2_name],
+        metric:[
+            county_1[metric],
+            county_2[metric]
+        ],
+    })
 
