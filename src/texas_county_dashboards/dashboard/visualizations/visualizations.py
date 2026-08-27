@@ -124,9 +124,9 @@ def create_population_comparison_chart(comparison_df):
     fig = px.bar(
         comparison_df,
         x="County",
-        y="Population",
+        y="population",
         title="Population",
-        text="Population",
+        text="population",
     )
 
     fig.update_traces(
@@ -146,9 +146,9 @@ def create_income_comparison_chart(comparison_df):
     fig = px.bar(
         comparison_df,
         x="County",
-        y="Median Household Income",
+        y="median_household_income",
         title="Median Household Income",
-        text="Median Household Income",
+        text="median_household_income",
     )
 
     fig.update_traces(
@@ -168,9 +168,9 @@ def create_poverty_comparison_chart(comparison_df):
     fig = px.bar(
         comparison_df,
         x="County",
-        y="Poverty Rate",
+        y="poverty_rate",
         title="Poverty Rate",
-        text="Poverty Rate",
+        text="poverty_rate",
     )
 
     fig.update_traces(
