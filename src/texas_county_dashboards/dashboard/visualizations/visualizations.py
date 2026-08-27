@@ -232,3 +232,67 @@ def create_unemployment_comparison(
     return fig
 
 
+def create_population_comparison_chart(comparison_df):
+    fig = px.bar(
+        comparison_df,
+        x="County",
+        y="Population",
+        title="Population",
+        text="Population",
+    )
+
+    fig.update_traces(
+        texttemplate="%{text:,.0f}",
+        textposition="outside",
+    )
+
+    fig.update_layout(
+        yaxis_title="Population",
+        xaxis_title=None,
+    )
+
+    return fig
+
+def create_income_comparison_chart(comparison_df):
+    fig = px.bar(
+        comparison_df,
+        x="County",
+        y="Median Household Income",
+        title="Median Household Income",
+        text="Median Household Income",
+    )
+
+    fig.update_traces(
+        texttemplate="%{text:,.0f}",
+        textposition="outside",
+    )
+
+    fig.update_layout(
+        yaxis_title="Median Household Income",
+        xaxis_title=None,
+    )
+
+    return fig
+
+
+def create_poverty_comparison_chart(comparison_df):
+    fig = px.bar(
+        comparison_df,
+        x="County",
+        y="Poverty Rate",
+        title="Poverty Rate",
+        text="Poverty Rate",
+    )
+
+    fig.update_traces(
+        texttemplate="%{text:,.0f}",
+        textposition="outside",
+    )
+
+    fig.update_layout(
+        yaxis_title="Poverty Rate",
+        xaxis_title=None,
+    )
+
+    return fig
+

@@ -9,7 +9,10 @@ from texas_county_dashboards.dashboard.visualizations.visualizations import (
     create_income_boxplot,
     create_income_comparison,
     create_poverty_comparison,
-    create_unemployment_comparison
+    create_unemployment_comparison,
+    create_population_comparison_chart,
+    create_income_comparison_chart,
+    create_poverty_comparison_chart
 )
 
 
@@ -45,7 +48,7 @@ page = st.sidebar.radio(
     "Navigate",
     [
         "Overview",
-        "County Explorer",
+        "County vs. Texas",
         "County Comparison",
         "Demographics Explorer"
     ]
@@ -129,7 +132,7 @@ if page == "Overview":
     st.plotly_chart(fig, use_container_width=True)
 
 
-if page == "County Explorer":
+if page == "County vs. Texas":
     st.subheader("County Explorer")
 
     # Create county selector
@@ -377,6 +380,52 @@ if page == "County Comparison":
         hide_index=True,
         use_container_width=True,
     )
+
+    # Compare economic profile
+    st.subheader("Economic Profile")
+
+    # Data for comparison charts
+    population_comparison = pd.DataFrame({
+        "County": [selected_county_1, selected_county_2],
+        "Population": [
+            county_1["population"],
+            county_2["population"],
+        ],
+    })
+
+    income_comparison = pd.DataFrame({
+        "County": [selected_county_1, selected_county_2],
+        "Median Household Income": [
+            county_1["median_household_income"],
+            county_2["median_household_income"],
+        ],
+    })
+
+    poverty_comparison = pd.DataFrame({
+        "County": [selected_county_1, selected_county_2],
+        "Poverty Rate": [
+            county_1["poverty_rate"],
+            county_2["poverty_rate"],
+        ],
+    })
+
+    col1, col2, col3 = st.columns(3)
+
+    with col1:
+        st.plotly_chart(
+            create_population_comparison_chart(population_comparison),
+            use_container_width=True,
+        )
+
+    with col2:
+        st.plotly_chart(
+            create_income_comparison_chart(income_comparison),
+        )
+
+    with col3:
+        st.plotly_chart(
+            create_poverty_comparison_chart(poverty_comparison)
+        )
 
 
 if page == "Demographics Explorer":
