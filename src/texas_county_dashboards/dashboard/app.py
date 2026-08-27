@@ -1,4 +1,5 @@
 import streamlit as st
+import pandas as pd
 
 from texas_county_dashboards.dashboard.visualizations.preparation import load_county_data
 from texas_county_dashboards.dashboard.visualizations.visualizations import (
@@ -139,7 +140,7 @@ if page == "County Explorer":
     ].iloc[0]
 
     # KPI Cards
-    col1, col2, col3 = st.columns(3)
+    col1, col2, col3, col4 = st.columns(4)
 
     with col1:
         st.metric(
@@ -159,43 +160,118 @@ if page == "County Explorer":
             f"{selected_county['poverty_rate'].mean():,.0f}%"
         )
 
-    # Percentile Rankings
-    st.subheader("Ranking Against Other Counties")
+    with col4:
+        st.metric(
+            "Unemployment Rate",
+            f"{selected_county['unemployment_rate']:.1f}%"
+        )
 
-    population_percentile = (
-        county_gdf["population"] <= selected_county["population"]
-    ).mean() * 100
+    # Ranking Table
+    unemployment_rate = (
+            selected_county['unemployed'] / selected_county['population']
+    )
 
-    income_percentile = (
-        county_gdf['median_household_income'] <= selected_county["median_household_income"]
-    ).mean() * 100
+    # County benchmarks
+    texas_population = county_gdf["population"].sum()
+    texas_income = county_gdf["median_household_income"].median()
+    texas_poverty = county_gdf["poverty_rate"].median()
+    texas_unemployment = county_gdf["unemployment_rate"].median()
 
-    poverty_rate = selected_county["poverty_rate"]
+    population_rank = (
+        county_gdf["population"]
+        .rank(method="min", ascending=False)
+        .loc[selected_county.name]
+    )
 
-    poverty_rate_percentile = (
-       county_gdf["poverty_rate"] <= poverty_rate
-    ).mean() * 100
+    income_rank = (
+        county_gdf["median_household_income"]
+        .rank(method="min", ascending=False)
+        .loc[selected_county.name]
+    )
 
+    poverty_rank = (
+        county_gdf["poverty_rate"]
+        .rank(method="min", ascending=False)
+        .loc[selected_county.name]
+    )
+
+    unemployment_rank = (
+        county_gdf["unemployment_rate"]
+        .rank(method="min", ascending=False)
+        .loc[selected_county.name]
+    )
+
+    comparison_df = pd.DataFrame({
+        "Metric": [
+            "Population",
+            "Median Household Income",
+            "Poverty Rate",
+            "Unemployment Rate"
+        ],
+        county_name: [
+            f"{selected_county['population']:,.0f}",
+            f"${selected_county['median_household_income']:,.0f}",
+            f"{selected_county['poverty_rate']:.1f}%",
+            f"{selected_county['unemployment_rate']:.1f}%"
+        ],
+        "Texas": [
+            f"{texas_population:,.0f}",
+            f"${texas_income:,.0f}",
+            f"{texas_poverty:.1f}%",
+            f"{texas_unemployment:.1f}%"
+        ],
+        "Rank Among Texas Counties": [
+            f"{population_rank:.0f}",
+            f"{income_rank:.0f}",
+            f"{poverty_rank:.0f}",
+            f"{unemployment_rank:.0f}"
+        ]
+    })
+
+    st.subheader("County vs. Texas")
+
+    st.dataframe(
+        comparison_df,
+        hide_index=True,
+        use_container_width=True
+    )
+    st.caption(
+        "Rank is based on descending values, where 1 represents the highest value among Texas counties."
+    )
+
+    # Economic Profile
     col1, col2, col3 = st.columns(3)
 
     with col1:
         st.metric(
-            "Population Percentile",
-            f"{population_percentile:,.0f}th"
+            "Median Household Income",
+            f"${selected_county['median_household_income']:,.0f}",
+            delta=(
+                selected_county["median_household_income"]
+                - texas_income
+            )
         )
 
     with col2:
         st.metric(
-            "Income Percentile",
-            f"{income_percentile:,.0f}th"
+            "Poverty Rate",
+            f"{selected_county['poverty_rate']:.1f}%",
+            delta=(
+                    selected_county["poverty_rate"]
+                    - texas_poverty
+            )
         )
 
     with col3:
         st.metric(
-            "Poverty Rate Percentile",
-            f"{poverty_rate_percentile:.0f}th"
+            "Unemployment Rate",
+            f"{selected_county['unemployment_rate']:.1f}%",
+            delta=(
+                    selected_county["unemployment_rate"]
+                    - texas_unemployment
+            ),
+            delta_color="inverse"
         )
-
 
 
 if page == "County Comparison":
